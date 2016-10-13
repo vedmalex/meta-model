@@ -1,5 +1,3 @@
 {
-  "extends": "airbnb",
-  "installedESLint": true,
-  "plugins": []
+  "extends": "react-app"
 }

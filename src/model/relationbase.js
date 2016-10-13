@@ -1,19 +1,20 @@
+/* @flow */
 import camelcase from 'camelcase';
 
 export type RelationBaseInput = {
-  name?: string
+  name?: string,
 }
 
 export type RelationBaseStorage = {
-  name?: string
-  name_?: string
+  name?: string,
+  name_?: string,
 }
 
 export class RelationBase {
   /**
    * represents internal object storage
    */
-  protected $obj: RelationBaseStorage
+  $obj: RelationBaseStorage
 
   /**
    * construct object
@@ -24,7 +25,7 @@ export class RelationBase {
     }
   }
 
-  get name() {
+  get name(): string {
     return this.$obj ? this.$obj.name : undefined;
   }
 
@@ -63,6 +64,6 @@ export class RelationBase {
   }
 
   clone(): RelationBase {
-    return new (<typeof RelationBase>this.constructor)(this.toJSON());
+    return new (this.constructor)(this.toJSON());
   }
 }

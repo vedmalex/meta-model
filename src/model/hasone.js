@@ -1,21 +1,18 @@
+/* @flow */
 import { RelationBase, RelationBaseInput, RelationBaseStorage } from './relationbase';
 import { EntityReference } from './entityreference';
 
 export type HasOneInput = RelationBaseInput & {
-  hasOne: string
+  hasOne: string,
 }
 
 export type HasOneStorage = RelationBaseStorage & {
-  hasOne?: EntityReference
-  hasOne_?: string
+  hasOne?: EntityReference,
+  hasOne_?: string,
 }
 
 export class HasOne extends RelationBase {
-
   $obj: HasOneStorage
-  constructor(obj: HasOneInput) {
-    super(obj);
-  }
 
   get hasOne() {
     return this.$obj ? this.$obj.hasOne : undefined;

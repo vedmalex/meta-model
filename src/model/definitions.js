@@ -1,3 +1,4 @@
+/* @flow */
 export const REF_PATTERN = /^(.*?)(?:#(.*?))?$/;
 
 export const DEFAULT_ID_FIELDNAME = 'id';

@@ -1,14 +1,10 @@
+/* @flow */
 import { FieldBase, FieldBaseInput, FieldBaseStorage } from './fieldbase';
-import { Entity } from './entity';
 import { HasOne } from './hasone';
 import { HasMany } from './hasmany';
 import { BelongsTo } from './belongsto';
 import { BelongsToMany } from './belongstomany';
 import { EntityReference } from './entityreference';
-// import {
-//   IModelField, IModelFieldInput, IModelFieldStorage, IEntityReference, IBelongsTo, IBelongsToMany, IHasMany, IHasOne,
-//   IHasOneInput, IHasManyInput, IBelongsToInput, IBelongsToManyInput
-// } from './interfaces';
 import { ModelPackage } from './modelpackage';
 
 function discoverFieldType(obj) {
@@ -28,33 +24,30 @@ function discoverFieldType(obj) {
 };
 
 export type FieldInput = FieldBaseInput & {
-  type?: string
-  identity?: boolean
-  indexed?: boolean
-  required?: boolean
+  type?: string,
+  identity?: boolean,
+  indexed?: boolean,
+  required?: boolean,
   relation: {
     hasMany?: string,
     hasOne?: string,
     belongsTo?: string,
     belongsToMany?: string,
-    using: string
+    using: string,
   }
 }
 
 export type FieldStorage = FieldInput & FieldBaseStorage & {
-  type_?: string
-  idKey: EntityReference
-  identity_: boolean
-  required_: boolean
-  indexed_: boolean
-  relation: EntityReference
+  type_?: string,
+  idKey: EntityReference,
+  identity_: boolean,
+  required_: boolean,
+  indexed_: boolean,
+  relation: EntityReference,
 }
 
 export class Field extends FieldBase {
   $obj: FieldStorage
-  constructor(obj) {
-    super(obj);
-  }
 
   get type() {
     return this.$obj ? this.$obj.type : undefined;
@@ -118,7 +111,7 @@ export class Field extends FieldBase {
       }
 
       result.required_ = required_;
-      result.required = identity_ || required_ || false;
+      result.required = identity_ || required;
 
       if (obj.relation) {
         let relation_ = obj.relation;
@@ -137,7 +130,7 @@ export class Field extends FieldBase {
           case 'BelongsTo':
             relation = new BelongsTo(Object.assign({}, relation_, { entity: obj.entity }));
             break;
-          case 'unknown':
+          default:
             relation = undefined;
         }
 

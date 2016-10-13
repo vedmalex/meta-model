@@ -1,3 +1,4 @@
+/* @flow */
 import { RelationBase, RelationBaseInput, RelationBaseStorage } from './relationbase';
 import { EntityReference } from './entityreference';
 
@@ -6,21 +7,18 @@ export type BelongsToInput = RelationBaseInput & {
 }
 
 export type BelongsToStorage = RelationBaseStorage & {
-  belongsTo?: EntityReference
-  belongsTo_?: string
+  belongsTo?: EntityReference,
+  belongsTo_?: string,
 }
 
 export class BelongsTo extends RelationBase {
   $obj: BelongsToStorage
-  constructor(obj: BelongsToInput) {
-    super(obj);
-  }
 
-  get belongsTo() {
+  get belongsTo(): EntityReference {
     return this.$obj ? this.$obj.belongsTo : undefined;
   }
 
-  get ref() {
+  get ref(): EntityReference {
     return this.$obj ? this.$obj.belongsTo : undefined;
   }
 

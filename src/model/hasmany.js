@@ -1,24 +1,19 @@
+/* @flow */
 import { RelationBase, RelationBaseInput, RelationBaseStorage } from './relationbase';
-import { REF_PATTERN } from './definitions';
 import { EntityReference } from './entityreference';
-import camelcase from 'camelcase';
 
 export type HasManyInput = RelationBaseInput & {
-  hasMany: string
+  hasMany: string,
 }
 
 export type HasManyStorage = RelationBaseStorage & {
-  hasMany?: EntityReference
-  hasMany_?: string
+  hasMany?: EntityReference,
+  hasMany_?: string,
 }
 
 export class HasMany extends RelationBase {
 
   $obj: HasManyStorage
-
-  constructor(obj: HasManyInput) {
-    super(obj);
-  }
 
   get hasMany() {
     return this.$obj ? this.$obj.hasMany : undefined;

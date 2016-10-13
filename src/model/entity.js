@@ -1,8 +1,8 @@
+/* @flow */
 import { ModelBase, ModelBaseInput, ModelBaseStorage } from './modelbase';
 import { Field, FieldInput } from './field';
 import { HasOne } from './hasone';
 import { HasMany } from './hasmany';
-import { BelongsTo } from './belongsto';
 import { BelongsToMany } from './belongstomany';
 import { DEFAULT_ID_FIELD } from './definitions';
 import { ModelPackage } from './modelpackage';
@@ -15,23 +15,19 @@ import { ModelPackage } from './modelpackage';
  */
 
 export type EntityInput = ModelBaseInput & {
-  fields: FieldInput[]
+  fields: FieldInput[],
 }
 
 export type EntityStorage = ModelBaseStorage & {
-
-  fields: Map<string, Field>
-  relations: Set<string>
-  identity: Set<string>
-  required: Set<string>
-  indexed: Set<string>
+  fields: Map<string, Field>,
+  relations: Set<string>,
+  identity: Set<string>,
+  required: Set<string>,
+  indexed: Set<string>,
 }
 
 export class Entity extends ModelBase {
   $obj: EntityStorage
-  constructor(obj) {
-    super(obj);
-  }
 
   ensureIds(modelPackage: ModelPackage) {
     this.identity.forEach((value) => {
@@ -106,7 +102,6 @@ export class Entity extends ModelBase {
                 missingRef = false;
               }
             } else {
-              Entity
               let using = r.using;
               if (using && modelPackage.entities.has(using.entity)) {
                 // здесь нужно будет изменить тип ассоциации
@@ -123,6 +118,7 @@ export class Entity extends ModelBase {
             }
             break;
           case 'BelongsTo':
+          default:
             // must be in identity store
             if (modelPackage.identityFields.has(r.ref.toString())) {
               missingRef = false;
@@ -207,7 +203,7 @@ export class Entity extends ModelBase {
 
       });
 
-      if (identity.size == 0) {
+      if (identity.size === 0) {
         let f;
         if (fields.has('id')) {
           f = fields.get('id');
@@ -261,13 +257,15 @@ export class Entity extends ModelBase {
               res,
               {
                 fields: [...props.fields.values()].map(f => {
+                  let result;
                   if (this.relations.has(f.name)) {
                     if (modelRelations.has(f.name)) {
-                      return f.toObject(modelPackage);
+                      result = f.toObject(modelPackage);
                     }
                   } else {
-                    return f.toObject(modelPackage);
+                    result = f.toObject(modelPackage);
                   }
+                  return result;
                 }).filter(f => f),
               }
             )
@@ -302,13 +300,15 @@ export class Entity extends ModelBase {
               res,
               {
                 fields: [...props.fields.values()].map(f => {
+                  let result
                   if (this.relations.has(f.name)) {
                     if (modelRelations.has(f.name)) {
-                      return f.toJSON(modelPackage);
+                      result = f.toJSON(modelPackage);
                     }
                   } else {
-                    return f.toJSON(modelPackage);
+                    result = f.toJSON(modelPackage);
                   }
+                  return result;
                 }).filter(f => f),
               }
             )

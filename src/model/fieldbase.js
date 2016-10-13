@@ -1,18 +1,16 @@
+/* @flow */
 import { ModelBase, ModelBaseInput, ModelBaseStorage } from './modelbase';
 
 export type FieldBaseInput = ModelBaseInput & {
-  entity: string
+  entity: string,
 }
 
 export type FieldBaseStorage = FieldBaseInput & ModelBaseStorage & {
-  entity_: string
+  entity_: string,
 }
 
 export class FieldBase extends ModelBase {
   $obj: FieldBaseStorage
-  constructor(obj) {
-    super(obj);
-  }
 
   get entity() {
     return this.$obj ? this.$obj.entity : undefined;
@@ -53,7 +51,6 @@ export class FieldBase extends ModelBase {
 
   // it get clean object with no default values
   toJSON() {
-    let props = this.$obj;
     let res = super.toJSON();
     return JSON.parse(
       JSON.stringify(

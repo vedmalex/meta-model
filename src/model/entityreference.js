@@ -1,11 +1,12 @@
+/* @flow */
 import { DEFAULT_ID_FIELDNAME, REF_PATTERN } from './definitions';
 import camelcase from 'camelcase';
 
 // import { IEntityReference } from './interfaces';
 
 export type EntityReferenceInput = {
-  field?: string
-  entity?: string
+  field?: string,
+  entity?: string,
 }
 
 /** Entityt reference implementation */
@@ -16,11 +17,11 @@ export class EntityReference {
   field: string = 'id'
 
   constructor(entity?: string | EntityReferenceInput, field?: string) {
-    if (typeof entity == 'string' && !field) {
+    if (typeof entity === 'string' && !field) {
       let res = entity.match(REF_PATTERN);
       this.entity = res[1];
       this.field = res[2] ? camelcase(res[2].trim()) : '';
-    } else if (typeof entity == 'string') {
+    } else if (typeof entity === 'string') {
       this.entity = entity;
       this.field = field;
     } else if (entity instanceof Object) {
@@ -30,7 +31,7 @@ export class EntityReference {
   }
 
   clone() {
-    return new (<typeof EntityReference>this.constructor)(this);
+    return new (this.constructor)(this);
   }
 
   toObject() {

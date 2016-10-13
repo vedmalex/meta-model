@@ -1,10 +1,10 @@
+/* @flow */
 import { Entity } from '../model/entity';
-import { Field } from '../model/field';
 
 export type ModelPackageInput = {
-  name: string
-  title: string
-  description: string
+  name: string,
+  title: string,
+  description: string,
 }
 
 /** Model package is the storage place of Entities */
@@ -23,7 +23,7 @@ export class ModelPackage {
   relations: Map<string, Set<string>>
 
   constructor(name: string | ModelPackageInput, title?: string, description?: string) {
-    if (typeof name == 'string') {
+    if (typeof name === 'string') {
       this.name = name || 'DefaultPackage';
       this.title = title || this.name;
       this.description = description || this.name;

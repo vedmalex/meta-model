@@ -1,17 +1,18 @@
+/* @flow */
 import camelcase from 'camelcase';
 import decamelize from 'decamelize';
 import { ModelPackage } from './modelpackage';
 
 export type ModelBaseInput = {
   name?: string,
-  title?: string
-  description?: string
+  title?: string,
+  description?: string,
 }
 
 export type ModelBaseStorage = ModelBaseInput & {
   name_?: string,
-  title_?: string
-  description_?: string
+  title_?: string,
+  description_?: string,
 }
 
 export class ModelBase {
@@ -98,6 +99,6 @@ export class ModelBase {
   }
 
   clone() {
-    return new (<typeof ModelBase>this.constructor)(this.toJSON());
+    return new (this.constructor)(this.toJSON());
   }
 }

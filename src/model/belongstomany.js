@@ -1,35 +1,32 @@
+/* @flow */
 import { RelationBase, RelationBaseInput, RelationBaseStorage } from './relationbase';
 import { EntityReference } from './entityreference';
 
 export type BelongsToManyInput = RelationBaseInput & {
-  belongsToMany: string
-  using: string
+  belongsToMany: string,
+  using: string,
 }
 
 export type BelongsToManyStorage = RelationBaseStorage & {
-  belongsToMany?: EntityReference
-  belongsToMany_?: string
-  using?: EntityReference
-  using_?: string
+  belongsToMany?: EntityReference,
+  belongsToMany_?: string,
+  using?: EntityReference,
+  using_?: string,
 }
 
 export class BelongsToMany extends RelationBase {
 
   $obj: BelongsToManyStorage
 
-  constructor(obj: BelongsToManyInput) {
-    super(obj);
-  }
-
-  get belongsToMany() {
+  get belongsToMany(): EntityReference {
     return this.$obj ? this.$obj.belongsToMany : undefined;
   }
 
-  get using() {
+  get using(): EntityReference {
     return this.$obj ? this.$obj.using : undefined;
   }
 
-  get ref() {
+  get ref(): EntityReference {
     return this.$obj ? this.$obj.belongsToMany : undefined;
   }
 

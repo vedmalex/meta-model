@@ -1,3 +1,4 @@
+/* @flow */
 import { Entity } from './entity';
 import { Field } from './field';
 import { ModelPackage } from './modelpackage';
