@@ -1,6 +1,8 @@
 /* @flow */
-import { ModelBase, ModelBaseInput, ModelBaseStorage } from './modelbase';
-import { Field, FieldInput } from './field';
+import { ModelBase } from './modelbase';
+import type {ModelBaseInput, ModelBaseStorage } from './modelbase';
+import { Field} from './field';
+import type {FieldInput } from './field';
 import { HasOne } from './hasone';
 import { HasMany } from './hasmany';
 import { BelongsToMany } from './belongstomany';
@@ -14,11 +16,11 @@ import { ModelPackage } from './modelpackage';
  * 3. тип объекта который идет на выходе clone
  */
 
-export type EntityInput = ModelBaseInput & {
+export interface EntityInput extends ModelBaseInput {
   fields: FieldInput[],
 }
 
-export type EntityStorage = ModelBaseStorage & {
+export interface EntityStorage extends ModelBaseStorage {
   fields: Map<string, Field>,
   relations: Set<string>,
   identity: Set<string>,
@@ -141,24 +143,24 @@ export class Entity extends ModelBase {
     });
   }
 
-  get relations() {
-    return this.$obj ? this.$obj.relations : undefined;
+  get relations(): Set<string> {
+    return this.$obj.relations;
   }
 
-  get required() {
-    return this.$obj ? this.$obj.required : undefined;
+  get required():Set<string> {
+    return this.$obj.required;
   }
 
-  get identity() {
-    return this.$obj ? this.$obj.identity : undefined;
+  get identity(): Set<string> {
+    return this.$obj.identity;
   }
 
-  get fields() {
-    return this.$obj ? this.$obj.fields : undefined;
+  get fields(): Map<string, Field>{
+    return this.$obj.fields;
   }
 
-  get indexed() {
-    return this.$obj ? this.$obj.indexed : undefined;
+  get indexed(): Set<string> {
+    return this.$obj.indexed;
   }
 
   updateWith(obj: EntityInput) {

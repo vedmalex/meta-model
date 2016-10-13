@@ -1,25 +1,26 @@
 /* @flow */
-import { RelationBase, RelationBaseInput, RelationBaseStorage } from './relationbase';
+import { RelationBase} from './relationbase';
+import  type { RelationBaseInput, RelationBaseStorage } from './relationbase';
 import { EntityReference } from './entityreference';
 
-export type HasOneInput = RelationBaseInput & {
+export interface HasOneInput extends RelationBaseInput {
   hasOne: string,
 }
 
-export type HasOneStorage = RelationBaseStorage & {
-  hasOne?: EntityReference,
+export interface HasOneStorage extends RelationBaseStorage {
+  hasOne: EntityReference,
   hasOne_?: string,
 }
 
 export class HasOne extends RelationBase {
   $obj: HasOneStorage
 
-  get hasOne() {
-    return this.$obj ? this.$obj.hasOne : undefined;
+  get hasOne(): EntityReference {
+    return this.$obj.hasOne;
   }
 
-  get ref() {
-    return this.$obj ? this.$obj.hasOne : undefined;
+  get ref(): EntityReference {
+    return this.$obj.hasOne;
   }
 
   updateWith(obj: HasOneInput) {

@@ -1,13 +1,14 @@
 /* @flow */
-import { RelationBase, RelationBaseInput, RelationBaseStorage } from './relationbase';
+import { RelationBase } from './relationbase';
+import type { RelationBaseInput, RelationBaseStorage} from './relationbase'
 import { EntityReference } from './entityreference';
 
-export type HasManyInput = RelationBaseInput & {
+export interface HasManyInput extends RelationBaseInput {
   hasMany: string,
 }
 
-export type HasManyStorage = RelationBaseStorage & {
-  hasMany?: EntityReference,
+export interface HasManyStorage extends RelationBaseStorage {
+  hasMany: EntityReference,
   hasMany_?: string,
 }
 
@@ -15,12 +16,12 @@ export class HasMany extends RelationBase {
 
   $obj: HasManyStorage
 
-  get hasMany() {
-    return this.$obj ? this.$obj.hasMany : undefined;
+  get hasMany() :EntityReference{
+    return this.$obj.hasMany;
   }
 
-  get ref() {
-    return this.$obj ? this.$obj.hasMany : undefined;
+  get ref():EntityReference {
+    return this.$obj.hasMany;
   }
 
   updateWith(obj: HasManyInput) {

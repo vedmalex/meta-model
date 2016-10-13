@@ -1,19 +1,21 @@
 /* @flow */
-import { ModelBase, ModelBaseInput, ModelBaseStorage } from './modelbase';
+import { ModelBase } from './modelbase';
+import type {ModelBaseInput, ModelBaseStorage} from './modelbase';
+import type {FieldStorage, FieldInput} from './field';
 
-export type FieldBaseInput = ModelBaseInput & {
+export interface FieldBaseInput extends ModelBaseInput {
   entity: string,
 }
 
-export type FieldBaseStorage = FieldBaseInput & ModelBaseStorage & {
+export interface FieldBaseStorage extends FieldBaseInput, ModelBaseStorage {
   entity_: string,
 }
 
 export class FieldBase extends ModelBase {
   $obj: FieldBaseStorage
 
-  get entity() {
-    return this.$obj ? this.$obj.entity : undefined;
+  get entity(): string {
+    return this.$obj.entity;
   }
 
   updateWith(obj: FieldBaseInput) {

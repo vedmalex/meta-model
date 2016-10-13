@@ -1,5 +1,7 @@
 /* @flow */
-import { FieldBase, FieldBaseInput, FieldBaseStorage } from './fieldbase';
+import { FieldBase } from './fieldbase';
+import type { RelationBase} from './relationbase';
+import type { FieldBaseInput, FieldBaseStorage } from './fieldbase';
 import { HasOne } from './hasone';
 import { HasMany } from './hasmany';
 import { BelongsTo } from './belongsto';
@@ -23,7 +25,7 @@ function discoverFieldType(obj) {
   }
 };
 
-export type FieldInput = FieldBaseInput & {
+export interface FieldInput extends FieldBaseInput {
   type?: string,
   identity?: boolean,
   indexed?: boolean,
@@ -33,28 +35,32 @@ export type FieldInput = FieldBaseInput & {
     hasOne?: string,
     belongsTo?: string,
     belongsToMany?: string,
-    using: string,
+    using?: string,
   }
 }
 
-export type FieldStorage = FieldInput & FieldBaseStorage & {
+export interface FieldStorage extends FieldBaseStorage {
+  type: string,
+  identity: boolean,
+  indexed: boolean,
+  required: boolean,
   type_?: string,
   idKey: EntityReference,
   identity_: boolean,
   required_: boolean,
   indexed_: boolean,
-  relation: EntityReference,
+  relation: RelationBase,
 }
 
 export class Field extends FieldBase {
   $obj: FieldStorage
 
-  get type() {
-    return this.$obj ? this.$obj.type : undefined;
+  get type(): string {
+    return this.$obj.type;
   }
 
-  get identity() {
-    return this.$obj ? this.$obj.identity : undefined;
+  get identity(): boolean {
+    return this.$obj.identity;
   }
 
   // this is to make sure that if we internally set
@@ -63,20 +69,20 @@ export class Field extends FieldBase {
     this.$obj.indexed = this.$obj.identity = this.$obj.identity_ = true;
   }
 
-  get required() {
-    return this.$obj ? (this.$obj.required || this.$obj.required_) : undefined;
+  get required():boolean {
+    return this.$obj.required || this.$obj.required_;
   }
 
-  get indexed() {
-    return this.$obj ? (this.$obj.indexed || this.$obj.indexed_) : undefined;
+  get indexed(): boolean {
+    return this.$obj.indexed || this.$obj.indexed_;
   }
 
-  get idKey() {
-    return this.$obj ? this.$obj.idKey : undefined;
+  get idKey(): EntityReference {
+    return this.$obj.idKey;
   }
 
-  get relation() {
-    return this.$obj ? this.$obj.relation : undefined;
+  get relation(): EntityReference{
+    return this.$obj.relation;
   }
 
   updateWith(obj: FieldInput) {
@@ -115,7 +121,7 @@ export class Field extends FieldBase {
 
       if (obj.relation) {
         let relation_ = obj.relation;
-        let relation;
+        let relation : RelationBase;
 
         switch (discoverFieldType(relation_)) {
           case 'HasOne':
@@ -131,7 +137,7 @@ export class Field extends FieldBase {
             relation = new BelongsTo(Object.assign({}, relation_, { entity: obj.entity }));
             break;
           default:
-            relation = undefined;
+            throw new Error('undefined type')
         }
 
         result.relation = relation;

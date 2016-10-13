@@ -1,32 +1,39 @@
 /* @flow */
 import camelcase from 'camelcase';
 
-export type RelationBaseInput = {
+import type { HasOneStorage } from './hasone'
+import type { HasManyStorage } from './hasmany'
+import type { BelongsToStorage } from './belongsto'
+import type { BelongsToManyStorage } from './belongstomany'
+
+export interface RelationBaseInput {
   name?: string,
+  entity?: string
 }
 
-export type RelationBaseStorage = {
-  name?: string,
-  name_?: string,
+export interface RelationBaseStorage {
+  name: string,
+  name_: string,
 }
 
 export class RelationBase {
   /**
    * represents internal object storage
    */
-  $obj: RelationBaseStorage
+  $obj: RelationBaseStorage | HasOneStorage | HasManyStorage | BelongsToStorage | BelongsToManyStorage
 
   /**
    * construct object
    */
   constructor(obj: RelationBaseInput) {
+    this.$obj = { name: '' };
     if (obj) {
       this.updateWith(obj);
     }
   }
 
   get name(): string {
-    return this.$obj ? this.$obj.name : undefined;
+    return this.$obj.name;
   }
 
   toString() {
@@ -47,7 +54,7 @@ export class RelationBase {
     };
   }
 
-  updateWith(obj: RelationBaseInput): void {
+  updateWith(obj: any): void {
     if (obj) {
 
       const result = this.$obj ? Object.assign({}, this.$obj) : {};

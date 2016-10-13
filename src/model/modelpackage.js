@@ -1,10 +1,11 @@
 /* @flow */
-import { Entity } from '../model/entity';
+import { Entity } from './entity';
+import type { EntityInput } from './entity';
 
-export type ModelPackageInput = {
+export interface ModelPackageInput {
   name: string,
-  title: string,
-  description: string,
+  title: ?string,
+  description: ?string,
 }
 
 /** Model package is the storage place of Entities */
@@ -12,9 +13,9 @@ export class ModelPackage {
   /** name of the package */
   name: string
   /** display title */
-  title: string
+  title: ?string
   /** description */
-  description: string
+  description: ?string
   /** entity storage */
   entities: Map<string, Entity>
   /** Identity fields cache */
@@ -50,17 +51,17 @@ export class ModelPackage {
   }
 
   /** get Entity by name */
-  get(name) {
+  get(name:string) {
     return this.entities.get(name);
   }
 
   /** create entity with json */
-  create(json) {
+  create(json:EntityInput) {
     return this.add(new Entity(json));
   }
 
   /** remove entity from package*/
-  remove(name) {
+  remove(name:string) {
     let entity = this.entities.get(name);
     if (entity) {
       this.entities.delete(name);
@@ -68,7 +69,7 @@ export class ModelPackage {
     }
   }
   /** return size of package */
-  get size() {
+  get size():number {
     return this.entities.size;
   }
 

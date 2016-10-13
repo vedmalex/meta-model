@@ -3,16 +3,23 @@ import camelcase from 'camelcase';
 import decamelize from 'decamelize';
 import { ModelPackage } from './modelpackage';
 
-export type ModelBaseInput = {
-  name?: string,
+import type { EntityStorage, EntityInput } from './entity';
+import type {FieldBaseStorage, FieldBaseInput } from './fieldbase';
+import type {FieldStorage, FieldInput} from './field';
+
+export interface ModelBaseInput {
+  name: string,
   title?: string,
   description?: string,
 }
 
-export type ModelBaseStorage = ModelBaseInput & {
-  name_?: string,
-  title_?: string,
-  description_?: string,
+export interface ModelBaseStorage {
+  name: string,
+  title: string,
+  description: string,
+  name_: string,
+  title_: string,
+  description_: string,
 }
 
 export class ModelBase {
@@ -24,16 +31,16 @@ export class ModelBase {
     }
   }
 
-  get name() {
+  get name():?string {
     return this.$obj ? this.$obj.name : undefined;
   }
 
-  get title() {
+  get title():?string {
     let props = this.$obj;
     return props ? (props.title || props.title_) : undefined;
   }
 
-  get description() {
+  get description():?string {
     let props = this.$obj;
     return props ? (props.description || props.description_) : undefined;
   }
@@ -51,7 +58,7 @@ export class ModelBase {
     };
   }
 
-  toJSON(modelPackage?: ModelPackage) {
+  toJSON(modelPackage?: ModelPackage):ModelBaseInput {
     var props = this.$obj;
     return {
       name: props.name_,
@@ -63,7 +70,7 @@ export class ModelBase {
   updateWith(obj: ModelBaseInput) {
     if (obj) {
 
-      const result: ModelBaseStorage = this.$obj ? Object.assign({}, this.$obj) : {};
+      const result: ModelBaseStorage = Object.assign({}, this.$obj);
 
       let name_ = obj.name;
       let title_ = obj.title;
@@ -98,7 +105,7 @@ export class ModelBase {
     }
   }
 
-  clone() {
-    return new (this.constructor)(this.toJSON());
+  clone():ModelBase {
+    return new this.constructor(this.toJSON());
   }
 }

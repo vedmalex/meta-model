@@ -2,6 +2,6 @@
 {
   "editor.detectIndentation": false,
   "editor.tabSize": 2,
-  "jscs.enable": false,
-  "typescript.validate.enable": true
+  "javascript.validate.enable": false,
+  "eslint.enable": false
 }

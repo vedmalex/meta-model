@@ -1,16 +1,17 @@
 /* @flow */
-import { RelationBase, RelationBaseInput, RelationBaseStorage } from './relationbase';
+import { RelationBase} from './relationbase';
+import type { RelationBaseInput, RelationBaseStorage } from './relationbase';
 import { EntityReference } from './entityreference';
 
-export type BelongsToManyInput = RelationBaseInput & {
+export interface BelongsToManyInput extends RelationBaseInput  {
   belongsToMany: string,
   using: string,
 }
 
-export type BelongsToManyStorage = RelationBaseStorage & {
-  belongsToMany?: EntityReference,
+export interface BelongsToManyStorage extends RelationBaseStorage {
+  belongsToMany: EntityReference,
   belongsToMany_?: string,
-  using?: EntityReference,
+  using: EntityReference,
   using_?: string,
 }
 
@@ -19,15 +20,15 @@ export class BelongsToMany extends RelationBase {
   $obj: BelongsToManyStorage
 
   get belongsToMany(): EntityReference {
-    return this.$obj ? this.$obj.belongsToMany : undefined;
+    return this.$obj.belongsToMany;
   }
 
   get using(): EntityReference {
-    return this.$obj ? this.$obj.using : undefined;
+    return this.$obj.using;
   }
 
   get ref(): EntityReference {
-    return this.$obj ? this.$obj.belongsToMany : undefined;
+    return this.$obj.belongsToMany;
   }
 
   updateWith(obj: BelongsToManyInput) {
