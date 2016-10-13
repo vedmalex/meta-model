@@ -1,6 +1,7 @@
 /* @flow */
 import camelcase from 'camelcase';
 import type {RelationBaseStorage, RelationBaseInput } from './interfaces';
+import {EntityReference} from './entityreference';
 export class RelationBase {
   /**
    * represents internal object storage
@@ -19,6 +20,10 @@ export class RelationBase {
 
   get name(): string {
     return this.$obj.name;
+  }
+
+  get ref(): EntityReference {
+    return new EntityReference({entity:'', field:''});
   }
 
   toString() {

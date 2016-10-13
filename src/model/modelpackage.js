@@ -1,5 +1,6 @@
 /* @flow */
 import { Entity } from './entity';
+import type {Field} from './field';
 import type {ModelPackageInput, EntityInput} from './interfaces';
 
 /** Model package is the storage place of Entities */
@@ -15,7 +16,7 @@ export class ModelPackage {
   /** Identity fields cache */
   identityFields: Map<string, Entity>
   /** relation cache */
-  relations: Map<string, Set<string>>
+  relations: Map<string, Map<string, Field>>
 
   constructor(name: string | ModelPackageInput, title?: string, description?: string) {
     if (typeof name === 'string') {

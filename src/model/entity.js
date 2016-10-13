@@ -3,6 +3,7 @@ import { ModelBase } from './modelbase';
 import { Field} from './field';
 import { HasOne } from './hasone';
 import { HasMany } from './hasmany';
+import { BelongsTo } from './belongsto';
 import { BelongsToMany } from './belongstomany';
 import { DEFAULT_ID_FIELD } from './definitions';
 import { ModelPackage } from './modelpackage';
@@ -21,7 +22,9 @@ export class Entity extends ModelBase {
   ensureIds(modelPackage: ModelPackage) {
     this.identity.forEach((value) => {
       var ids = this.fields.get(value);
-      modelPackage.identityFields.set(ids.idKey.toString(), this);
+      if(ids){
+        modelPackage.identityFields.set(ids.idKey.toString(), this);
+      }
     });
   }
 
@@ -35,84 +38,79 @@ export class Entity extends ModelBase {
         modelPackage.relations.set(this.name, modelRelations);
       }
 
-      this.relations.forEach((value) => {
-        let ref = this.fields.get(value);
-        // must be different to apply fixup
-        modelRelations.set(ref.name, ref.clone());
-      });
+      if(modelRelations){
+        this.relations.forEach((value) => {
+          let ref = this.fields.get(value);
+          // must be different to apply fixup
+          ref &&  modelRelations && modelRelations.set(ref.name, ref.clone());
+        });
+      }
 
       let missing = this.checkRelations(modelPackage);
       missing.forEach((r) => {
-        modelRelations.delete(r.name);
+        modelRelations && modelRelations.delete(r.name);
       });
     }
   }
 
-  checkRelations(modelPackage) {
+  checkRelations(modelPackage: ModelPackage) {
     let missing = [];
     if (modelPackage.relations.has(this.name)) {
       let modelRelations = modelPackage.relations.get(this.name);
-      modelRelations.forEach((field) => {
+      modelRelations && modelRelations.forEach((field) => {
         let r = field.relation;
         let missingRef = true;
         if (!r.ref.field) {
           // discover fieldName
           if (modelPackage.entities.has(r.ref.entity)) {
             let e = modelPackage.entities.get(r.ref.entity);
-            r.ref.field = e.identity[0];
-            missingRef = false;
+            if(e){
+              let identity = e.identity;
+              (r.ref.field = identity.values().next().value || 'id');
+              missingRef = false;
+            }
           }
         }
 
-        const fType = (r instanceof HasOne) ? 'HasOne' : (r instanceof HasMany ? 'HasMany' : (r instanceof BelongsToMany ? 'BelongsToMany' : 'BelongsTo'));
-        switch (fType) {
-          case 'HasOne':
-            if (modelPackage.entities.has(r.ref.entity)) {
-              let refe = modelPackage.entities.get(r.ref.entity);
-              if (refe.relations.fields.has(r.ref.field)) {
-                missingRef = false;
-              }
-            }
-            break;
-          case 'HasMany':
-            // must be in ref store
-            if (modelPackage.entities.has(r.ref.entity)) {
-              let refe = modelPackage.entities.get(r.ref.entity);
-              if (refe.fields.has(r.ref.field)) {
-                missingRef = false;
-              }
-            }
-            break;
-          case 'BelongsToMany':
-            // must be in ref store
-            if (modelPackage.entities.has(r.ref.entity)) {
-              let refe = modelPackage.entities.get(r.ref.entity);
-              if (refe.fields.has(r.ref.field)) {
-                missingRef = false;
-              }
-            } else {
-              let using = r.using;
-              if (using && modelPackage.entities.has(using.entity)) {
-                // здесь нужно будет изменить тип ассоциации
-
-                let replaceRef = r.toJSON();
-                replaceRef.hasMany = replaceRef.using;
-
-                delete replaceRef.belongsToMany;
-                delete replaceRef.using;
-
-                field.$obj.relation = new HasMany(replaceRef);
-                missingRef = false;
-              }
-            }
-            break;
-          case 'BelongsTo':
-          default:
-            // must be in identity store
-            if (modelPackage.identityFields.has(r.ref.toString())) {
+        if(r instanceof HasOne){
+          if (modelPackage.entities.has(r.ref.entity)) {
+            let refe = modelPackage.entities.get(r.ref.entity);
+            if (refe && refe.fields.has(r.ref.field)) {
               missingRef = false;
             }
-            break;
+          }
+        } else if(r instanceof HasMany){
+          if (modelPackage.entities.has(r.ref.entity)) {
+            let refe = modelPackage.entities.get(r.ref.entity);
+            if (refe && refe.fields.has(r.ref.field)) {
+              missingRef = false;
+            }
+          }
+        } else if (r instanceof BelongsToMany){
+          if (modelPackage.entities.has(r.ref.entity)) {
+            let refe = modelPackage.entities.get(r.ref.entity);
+            if (refe && refe.fields.has(r.ref.field)) {
+              missingRef = false;
+            }
+          } else {
+            let using = r.using;
+            if (using && modelPackage.entities.has(using.entity)) {
+              // здесь нужно будет изменить тип ассоциации
+
+              let replaceRef = r.toJSON();
+              replaceRef.hasMany = replaceRef.using;
+
+              delete replaceRef.belongsToMany;
+              delete replaceRef.using;
+
+              field.$obj.relation = new HasMany(replaceRef);
+              missingRef = false;
+            }
+          }
+        } else if(r instanceof BelongsTo){
+          if (modelPackage.identityFields.has(r.ref.toString())) {
+            missingRef = false;
+          }
         }
 
         if (missingRef) {
@@ -126,7 +124,9 @@ export class Entity extends ModelBase {
   removeIds(modelPackage:ModelPackage) {
     this.identity.forEach((value) => {
       var ids = this.fields.get(value);
-      modelPackage.identityFields.delete(ids.idKey.toString());
+      if(ids){
+        modelPackage.identityFields.delete(ids.idKey.toString());
+      }
     });
   }
 
@@ -196,17 +196,19 @@ export class Entity extends ModelBase {
         let f;
         if (fields.has('id')) {
           f = fields.get('id');
-        } else if (fields.has('_id')) {
+        } else if (!f && fields.has('_id')) {
           f = fields.get('_id');
         } else {
           f = new Field(Object.assign({}, DEFAULT_ID_FIELD, { entity: result.name }));
           fields.set(f.name, f);
         }
 
-        f.makeIdentity();
-        indexed.add(f.name);
-        identity.add(f.name);
-        required.add(f.name);
+        if(f){
+          f.makeIdentity();
+          indexed.add(f.name);
+          identity.add(f.name);
+          required.add(f.name);
+        }
       }
 
       result.relations = relations;
@@ -248,7 +250,7 @@ export class Entity extends ModelBase {
                 fields: [...props.fields.values()].map(f => {
                   let result;
                   if (this.relations.has(f.name)) {
-                    if (modelRelations.has(f.name)) {
+                    if (modelRelations && modelRelations.has(f.name)) {
                       result = f.toObject(modelPackage);
                     }
                   } else {
@@ -291,7 +293,7 @@ export class Entity extends ModelBase {
                 fields: [...props.fields.values()].map(f => {
                   let result
                   if (this.relations.has(f.name)) {
-                    if (modelRelations.has(f.name)) {
+                    if (modelRelations && modelRelations.has(f.name)) {
                       result = f.toJSON(modelPackage);
                     }
                   } else {

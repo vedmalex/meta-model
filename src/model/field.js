@@ -54,8 +54,12 @@ export class Field extends FieldBase {
     return this.$obj.idKey;
   }
 
-  get relation(): EntityReference{
+  get relation(): RelationBase {
     return this.$obj.relation;
+  }
+
+  clone(){
+    return new this.constructor(this.toJSON());
   }
 
   updateWith(obj: FieldInput) {

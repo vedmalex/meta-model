@@ -11,7 +11,7 @@ export class HasMany extends RelationBase {
     return this.$obj.hasMany;
   }
 
-  get ref():EntityReference {
+  get ref(): EntityReference {
     return this.$obj.hasMany;
   }
 

@@ -13,18 +13,16 @@ export class ModelBase {
     }
   }
 
-  get name():?string {
-    return this.$obj ? this.$obj.name : undefined;
+  get name(): string {
+    return this.$obj.name;
   }
 
-  get title():?string {
-    let props = this.$obj;
-    return props ? (props.title || props.title_) : undefined;
+  get title(): string {
+    return this.$obj.title;
   }
 
-  get description():?string {
-    let props = this.$obj;
-    return props ? (props.description || props.description_) : undefined;
+  get description(): string {
+    return this.$obj.description;
   }
 
   toString() {
@@ -34,9 +32,9 @@ export class ModelBase {
   toObject(modelPackage?: ModelPackage) {
     let props = this.$obj;
     return {
-      name: props.name || props.name_,
-      title: props.title || props.title_,
-      description: props.description || props.description_,
+      name: props.name,
+      title: props.title,
+      description: props.description,
     };
   }
 
