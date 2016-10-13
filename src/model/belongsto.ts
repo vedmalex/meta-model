@@ -1,12 +1,18 @@
-import { RelationBase } from './relationbase';
-import { REF_PATTERN } from './definitions';
+import { RelationBase, RelationBaseInput, RelationBaseStorage } from './relationbase';
 import { EntityReference } from './entityreference';
-import camelcase from 'camelcase';
-import { IBelongsToInput, IBelongsTo, IBelongsToStorage, IEntityReference } from './interfaces';
+
+export type BelongsToInput = RelationBaseInput & {
+  belongsTo: string
+}
+
+export type BelongsToStorage = RelationBaseStorage & {
+  belongsTo?: EntityReference
+  belongsTo_?: string
+}
 
 export class BelongsTo extends RelationBase {
-  $obj: IBelongsTo & IBelongsToStorage
-  constructor(obj: IBelongsToInput) {
+  $obj: BelongsToStorage
+  constructor(obj: BelongsToInput) {
     super(obj);
   }
 
@@ -18,7 +24,7 @@ export class BelongsTo extends RelationBase {
     return this.$obj ? this.$obj.belongsTo : undefined;
   }
 
-  updateWith(obj: IBelongsToInput) {
+  updateWith(obj: BelongsToInput) {
     if (obj) {
       super.updateWith(obj);
 
@@ -28,12 +34,7 @@ export class BelongsTo extends RelationBase {
 
       let belongsTo;
       if (belongsTo_) {
-        belongsTo = new EntityReference();
-        let res = belongsTo_.match(REF_PATTERN);
-        if (res.length > 0) {
-          belongsTo.entity = res[1];
-          belongsTo.field = res[2] ? camelcase(res[2].trim()) : '';
-        }
+        belongsTo = new EntityReference(belongsTo_);
       }
 
       result.belongsTo_ = belongsTo_;

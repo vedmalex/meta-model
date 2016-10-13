@@ -1,14 +1,22 @@
-import { RelationBase } from './relationbase';
+import { RelationBase, RelationBaseInput, RelationBaseStorage } from './relationbase';
 import { REF_PATTERN } from './definitions';
 import { EntityReference } from './entityreference';
 import camelcase from 'camelcase';
-import { IHasManyInput, IHasMany, IHasManyStorage, IEntityReference } from './interfaces';
+
+export type HasManyInput = RelationBaseInput & {
+  hasMany: string
+}
+
+export type HasManyStorage = RelationBaseStorage & {
+  hasMany?: EntityReference
+  hasMany_?: string
+}
 
 export class HasMany extends RelationBase {
 
-  $obj: IHasMany & IHasManyStorage
+  $obj: HasManyStorage
 
-  constructor(obj: IHasManyInput) {
+  constructor(obj: HasManyInput) {
     super(obj);
   }
 
@@ -20,7 +28,7 @@ export class HasMany extends RelationBase {
     return this.$obj ? this.$obj.hasMany : undefined;
   }
 
-  updateWith(obj: IHasManyInput) {
+  updateWith(obj: HasManyInput) {
     if (obj) {
       super.updateWith(obj);
 
@@ -30,10 +38,7 @@ export class HasMany extends RelationBase {
 
       let hasMany;
       if (hasMany_) {
-        hasMany = new EntityReference();
-        let res = hasMany_.match(REF_PATTERN);
-        hasMany.entity = (<string>res[1]);
-        hasMany.field = res[2] ? camelcase(res[2].trim()) : '';
+        hasMany = new EntityReference(hasMany_);
       }
 
       result.hasMany_ = hasMany_;

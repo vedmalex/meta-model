@@ -2,5 +2,6 @@
 {
   "editor.detectIndentation": false,
   "editor.tabSize": 2,
-  "jscs.enable": false
+  "jscs.enable": false,
+  "typescript.validate.enable": true
 }

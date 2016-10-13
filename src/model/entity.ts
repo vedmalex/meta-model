@@ -1,5 +1,5 @@
-import { ModelBase } from './modelbase';
-import { Field } from './field';
+import { ModelBase, ModelBaseInput, ModelBaseStorage } from './modelbase';
+import { Field, FieldInput } from './field';
 import { HasOne } from './hasone';
 import { HasMany } from './hasmany';
 import { BelongsTo } from './belongsto';
@@ -7,13 +7,28 @@ import { BelongsToMany } from './belongstomany';
 import { DEFAULT_ID_FIELD } from './definitions';
 import { ModelPackage } from './modelpackage';
 
-interface EntityInternal extends I {
-  identity: Map<string, string>
+/**
+ * 1. тип объекта который входит на updateWith
+ * 2. тип объекта который идет на toObject
+ * 3. тип объекта который идет на toJSON
+ * 3. тип объекта который идет на выходе clone
+ */
+
+export type EntityInput = ModelBaseInput & {
+  fields: FieldInput[]
+}
+
+export type EntityStorage = ModelBaseStorage & {
+
   fields: Map<string, Field>
+  relations: Set<string>
+  identity: Set<string>
+  required: Set<string>
+  indexed: Set<string>
 }
 
 export class Entity extends ModelBase {
-
+  $obj: EntityStorage
   constructor(obj) {
     super(obj);
   }
@@ -91,6 +106,7 @@ export class Entity extends ModelBase {
                 missingRef = false;
               }
             } else {
+              Entity
               let using = r.using;
               if (using && modelPackage.entities.has(using.entity)) {
                 // здесь нужно будет изменить тип ассоциации
@@ -149,12 +165,11 @@ export class Entity extends ModelBase {
     return this.$obj ? this.$obj.indexed : undefined;
   }
 
-
-  updateWith(obj) {
+  updateWith(obj: EntityInput) {
     if (obj) {
       super.updateWith(obj);
 
-      const result = this.$obj ? {...this.$obj } : {};
+      const result = Object.assign({}, this.$obj);
 
       result.name = (result.name.slice(0, 1)).toUpperCase() + result.name.slice(1);
 
@@ -166,116 +181,140 @@ export class Entity extends ModelBase {
 
       obj.fields.forEach(f => {
 
-        let field = new Field({...f, entity: result.name});
+        let field = new Field(Object.assign({}, f, { entity: result.name }));
 
-      if (fields.has(field.name)) {
-        throw new Error(`the same field ${field.name} is already exists in ${obj.name} entry`);
-      }
-
-      fields.set(field.name, field);
-
-      if (field.identity) {
-        identity.add(field.name);
-      }
-
-      if (field.required) {
-        required.add(field.name);
-      }
-
-      if (field.relation) {
-        relations.add(field.name);
-      }
-
-      if (field.indexed) {
-        indexed.add(field.name);
-      }
-
-    });
-
-    if (identity.size == 0) {
-      let f;
-      if (fields.has('id')) {
-        f = fields.get('id');
-      } else if (fields.has('_id')) {
-        f = fields.get('_id');
-      } else {
-        f = new Field({...DEFAULT_ID_FIELD, entity: result.name});
-      fields.set(f.name, f);
-    }
-
-    f.makeIdentity();
-    indexed.add(f.name);
-    identity.add(f.name);
-    required.add(f.name);
-  }
-
-  result.relations = relations;
-  result.identity = identity;
-  result.required = required;
-  result.indexed = indexed;
-  result.fields = fields;
-
-      this.$obj = {
-        ...result
-};
-    }
-  }
-
-toObject(modelPackage) {
-  if (!modelPackage) {
-    let props = this.$obj;
-    let res = super.toObject();
-    return JSON.parse(JSON.stringify({
-      ...res,
-      fields: [...props.fields.values()].map(f => f.toObject()),
-    }));
-} else {
-  let modelRelations = modelPackage.relations.get(this.name);
-  if (modelRelations) {
-    let props = this.$obj;
-    let res = super.toObject();
-    return JSON.parse(JSON.stringify({
-          ...res,
-      fields: [...props.fields.values()].map(f => {
-        if (this.relations.has(f.name)) {
-          if (modelRelations.has(f.name)) {
-            return f.toObject(modelPackage);
-          }
-        } else {
-          return f.toObject(modelPackage);
+        if (fields.has(field.name)) {
+          throw new Error(`the same field ${field.name} is already exists in ${obj.name} entry`);
         }
-      }).filter(f => f),
-        }));
-}
+
+        fields.set(field.name, field);
+
+        if (field.identity) {
+          identity.add(field.name);
+        }
+
+        if (field.required) {
+          required.add(field.name);
+        }
+
+        if (field.relation) {
+          relations.add(field.name);
+        }
+
+        if (field.indexed) {
+          indexed.add(field.name);
+        }
+
+      });
+
+      if (identity.size == 0) {
+        let f;
+        if (fields.has('id')) {
+          f = fields.get('id');
+        } else if (fields.has('_id')) {
+          f = fields.get('_id');
+        } else {
+          f = new Field(Object.assign({}, DEFAULT_ID_FIELD, { entity: result.name }));
+          fields.set(f.name, f);
+        }
+
+        f.makeIdentity();
+        indexed.add(f.name);
+        identity.add(f.name);
+        required.add(f.name);
+      }
+
+      result.relations = relations;
+      result.identity = identity;
+      result.required = required;
+      result.indexed = indexed;
+      result.fields = fields;
+
+      this.$obj = Object.assign({}, result);
     }
   }
 
-toJSON(modelPackage) {
-  if (!modelPackage) {
-    let props = this.$obj;
-    let res = super.toJSON();
-    return JSON.parse(JSON.stringify({
-      ...res,
-      fields: [...props.fields.values()].map(f => f.toJSON()),
-    }));
-} else {
-  let modelRelations = modelPackage.relations.get(this.name);
-  if (modelRelations) {
-    let props = this.$obj;
-    let res = super.toJSON();
-    return JSON.parse(JSON.stringify({
-          ...res,
-      fields: [...props.fields.values()].map(f => {
-        if (this.relations.has(f.name)) {
-          if (modelRelations.has(f.name)) {
-            return f.toJSON(modelPackage);
+  toObject(modelPackage?: ModelPackage) {
+    if (!modelPackage) {
+      let props = this.$obj;
+      let res = super.toObject();
+      return JSON.parse(
+        JSON.stringify(
+          Object.assign(
+            {},
+            res,
+            {
+              fields: [...props.fields.values()].map(f => f.toObject()),
+            }
+          )
+        )
+      );
+    } else {
+      let modelRelations = modelPackage.relations.get(this.name);
+      if (modelRelations) {
+        let props = this.$obj;
+        let res = super.toObject();
+        return JSON.parse(
+          JSON.stringify(
+            Object.assign(
+              {},
+              res,
+              {
+                fields: [...props.fields.values()].map(f => {
+                  if (this.relations.has(f.name)) {
+                    if (modelRelations.has(f.name)) {
+                      return f.toObject(modelPackage);
+                    }
+                  } else {
+                    return f.toObject(modelPackage);
+                  }
+                }).filter(f => f),
+              }
+            )
+          )
+        );
+      }
+    }
+  }
+
+  toJSON(modelPackage?: ModelPackage) {
+    if (!modelPackage) {
+      let props = this.$obj;
+      let res = super.toJSON();
+      return JSON.parse(JSON.stringify(
+        Object.assign({},
+          res,
+          {
+            fields: [...props.fields.values()].map(f => f.toJSON()),
           }
-        } else {
-          return f.toJSON(modelPackage);
-        }
-      }).filter(f => f),
-        }));
-}
+        )
+      )
+      );
+    } else {
+      let modelRelations = modelPackage.relations.get(this.name);
+      if (modelRelations) {
+        let props = this.$obj;
+        let res = super.toJSON();
+        return JSON.parse(
+          JSON.stringify(
+            Object.assign(
+              {},
+              res,
+              {
+                fields: [...props.fields.values()].map(f => {
+                  if (this.relations.has(f.name)) {
+                    if (modelRelations.has(f.name)) {
+                      return f.toJSON(modelPackage);
+                    }
+                  } else {
+                    return f.toJSON(modelPackage);
+                  }
+                }).filter(f => f),
+              }
+            )
+          )
+        );
+      }
     }
   }
 }

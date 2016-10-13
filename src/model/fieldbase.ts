@@ -1,8 +1,15 @@
-import { ModelBase } from './modelbase';
-import { IModelFieldBase, IModelFieldBaseStorage } from './interfaces';
+import { ModelBase, ModelBaseInput, ModelBaseStorage } from './modelbase';
+
+export type FieldBaseInput = ModelBaseInput & {
+  entity: string
+}
+
+export type FieldBaseStorage = FieldBaseInput & ModelBaseStorage & {
+  entity_: string
+}
 
 export class FieldBase extends ModelBase {
-  $obj: IModelFieldBase & IModelFieldBaseStorage
+  $obj: FieldBaseStorage
   constructor(obj) {
     super(obj);
   }
@@ -11,7 +18,7 @@ export class FieldBase extends ModelBase {
     return this.$obj ? this.$obj.entity : undefined;
   }
 
-  updateWith(obj: IModelFieldBase) {
+  updateWith(obj: FieldBaseInput) {
     if (obj) {
       super.updateWith(obj);
 

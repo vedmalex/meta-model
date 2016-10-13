@@ -1,14 +1,15 @@
-import { FieldBase } from './fieldbase';
+import { FieldBase, FieldBaseInput, FieldBaseStorage } from './fieldbase';
 import { Entity } from './entity';
 import { HasOne } from './hasone';
 import { HasMany } from './hasmany';
 import { BelongsTo } from './belongsto';
 import { BelongsToMany } from './belongstomany';
 import { EntityReference } from './entityreference';
-import {
-  IModelField, IModelFieldInput, IModelFieldStorage, IEntityReference, IBelongsTo, IBelongsToMany, IHasMany, IHasOne,
-  IHasOneInput, IHasManyInput, IBelongsToInput, IBelongsToManyInput
-} from './interfaces';
+// import {
+//   IModelField, IModelFieldInput, IModelFieldStorage, IEntityReference, IBelongsTo, IBelongsToMany, IHasMany, IHasOne,
+//   IHasOneInput, IHasManyInput, IBelongsToInput, IBelongsToManyInput
+// } from './interfaces';
+import { ModelPackage } from './modelpackage';
 
 function discoverFieldType(obj) {
   // сделать проверку по полю...
@@ -26,8 +27,31 @@ function discoverFieldType(obj) {
   }
 };
 
+export type FieldInput = FieldBaseInput & {
+  type?: string
+  identity?: boolean
+  indexed?: boolean
+  required?: boolean
+  relation: {
+    hasMany?: string,
+    hasOne?: string,
+    belongsTo?: string,
+    belongsToMany?: string,
+    using: string
+  }
+}
+
+export type FieldStorage = FieldInput & FieldBaseStorage & {
+  type_?: string
+  idKey: EntityReference
+  identity_: boolean
+  required_: boolean
+  indexed_: boolean
+  relation: EntityReference
+}
+
 export class Field extends FieldBase {
-  $obj: IModelField & IModelFieldStorage
+  $obj: FieldStorage
   constructor(obj) {
     super(obj);
   }
@@ -62,7 +86,7 @@ export class Field extends FieldBase {
     return this.$obj ? this.$obj.relation : undefined;
   }
 
-  updateWith(obj: IModelFieldInput) {
+  updateWith(obj: FieldInput) {
     if (obj) {
       super.updateWith(obj);
       const result = Object.assign({}, this.$obj);
@@ -102,7 +126,7 @@ export class Field extends FieldBase {
 
         switch (discoverFieldType(relation_)) {
           case 'HasOne':
-            relation = new HasOne(Object.assign({}, relation_));
+            relation = new HasOne(Object.assign({}, relation_, { entity: obj.entity }));
             break;
           case 'HasMany':
             relation = new HasMany(Object.assign({}, relation_, { entity: obj.entity }));
@@ -127,7 +151,7 @@ export class Field extends FieldBase {
   }
 
   // it get fixed object
-  toObject() {
+  toObject(modelPackage?: ModelPackage) {
     let props = this.$obj;
     let res = super.toObject();
     return JSON.parse(
@@ -148,7 +172,7 @@ export class Field extends FieldBase {
   }
 
   // it get clean object with no default values
-  toJSON() {
+  toJSON(modelPackage?: ModelPackage) {
     let props = this.$obj;
     let res = super.toJSON();
     return JSON.parse(

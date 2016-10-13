@@ -1,12 +1,23 @@
 import camelcase from 'camelcase';
 import decamelize from 'decamelize';
-import { IModelItemBase, IModelItemBaseStorage, IInstrumented, } from './interfaces';
+import { ModelPackage } from './modelpackage';
 
+export type ModelBaseInput = {
+  name?: string,
+  title?: string
+  description?: string
+}
 
-export class ModelBase implements IModelItemBase, IInstrumented<IModelItemBase>{
-  $obj: IModelItemBaseStorage & IModelItemBase
+export type ModelBaseStorage = ModelBaseInput & {
+  name_?: string,
+  title_?: string
+  description_?: string
+}
 
-  constructor(obj: IModelItemBase) {
+export class ModelBase {
+  $obj: ModelBaseStorage
+
+  constructor(obj: ModelBaseInput) {
     if (obj) {
       this.updateWith(obj);
     }
@@ -30,7 +41,7 @@ export class ModelBase implements IModelItemBase, IInstrumented<IModelItemBase>{
     return JSON.stringify(this.toObject());
   }
 
-  toObject() {
+  toObject(modelPackage?: ModelPackage) {
     let props = this.$obj;
     return {
       name: props.name || props.name_,
@@ -39,7 +50,7 @@ export class ModelBase implements IModelItemBase, IInstrumented<IModelItemBase>{
     };
   }
 
-  toJSON() {
+  toJSON(modelPackage?: ModelPackage) {
     var props = this.$obj;
     return {
       name: props.name_,
@@ -48,10 +59,10 @@ export class ModelBase implements IModelItemBase, IInstrumented<IModelItemBase>{
     };
   }
 
-  updateWith(obj: IModelItemBase) {
+  updateWith(obj: ModelBaseInput) {
     if (obj) {
 
-      const result = this.$obj ? Object.assign({}, this.$obj) : {};
+      const result: ModelBaseStorage = this.$obj ? Object.assign({}, this.$obj) : {};
 
       let name_ = obj.name;
       let title_ = obj.title;

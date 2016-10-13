@@ -1,9 +1,14 @@
 import { Entity } from '../model/entity';
 import { Field } from '../model/field';
-import { IModelItemBase } from './interfaces'
+
+export type ModelPackageInput = {
+  name: string
+  title: string
+  description: string
+}
 
 /** Model package is the storage place of Entities */
-export class ModelPackage implements IModelItemBase {
+export class ModelPackage {
   /** name of the package */
   name: string
   /** display title */
@@ -15,9 +20,9 @@ export class ModelPackage implements IModelItemBase {
   /** Identity fields cache */
   identityFields: Map<string, Entity>
   /** relation cache */
-  relations: Map<string, Field>
+  relations: Map<string, Set<string>>
 
-  constructor(name: string | IModelItemBase, title: string, description: string) {
+  constructor(name: string | ModelPackageInput, title?: string, description?: string) {
     if (typeof name == 'string') {
       this.name = name || 'DefaultPackage';
       this.title = title || this.name;

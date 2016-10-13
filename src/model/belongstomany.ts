@@ -1,14 +1,23 @@
-import { RelationBase } from './relationbase';
-import { REF_PATTERN } from './definitions';
+import { RelationBase, RelationBaseInput, RelationBaseStorage } from './relationbase';
 import { EntityReference } from './entityreference';
-import camelcase from 'camelcase';
-import { IBelongsToMany, IBelongsToManyInput, IBelongsToManyStorage, IEntityReference } from './interfaces';
+
+export type BelongsToManyInput = RelationBaseInput & {
+  belongsToMany: string
+  using: string
+}
+
+export type BelongsToManyStorage = RelationBaseStorage & {
+  belongsToMany?: EntityReference
+  belongsToMany_?: string
+  using?: EntityReference
+  using_?: string
+}
 
 export class BelongsToMany extends RelationBase {
 
-  $obj: IBelongsToMany & IBelongsToManyStorage
+  $obj: BelongsToManyStorage
 
-  constructor(obj: IBelongsToManyInput) {
+  constructor(obj: BelongsToManyInput) {
     super(obj);
   }
 
@@ -24,7 +33,7 @@ export class BelongsToMany extends RelationBase {
     return this.$obj ? this.$obj.belongsToMany : undefined;
   }
 
-  updateWith(obj: IBelongsToManyInput) {
+  updateWith(obj: BelongsToManyInput) {
     if (obj) {
       super.updateWith(obj);
 
@@ -36,23 +45,17 @@ export class BelongsToMany extends RelationBase {
 
       let belongsToMany;
       if (belongsToMany_) {
-        belongsToMany = new EntityReference();
-        let res = belongsToMany_.match(REF_PATTERN);
-        belongsToMany.entity = res[1] || obj.entity;
-        belongsToMany.field = res[2] ? camelcase(res[2].trim()) : '';
+        belongsToMany = new EntityReference(belongsToMany_);
       }
 
       let using;
       if (using_) {
-        using = new EntityReference();
-        let res = using_.match(REF_PATTERN);
-        using.entity = res[1] || obj.name || obj.entity;
-        using.field = res[2] ? camelcase(res[2].trim()) : obj.entity.toLowerCase();
+        using = new EntityReference(using_);
       } else {
         using = new EntityReference(`${obj.name || obj.entity}#${obj.entity.toLowerCase()}`);
       }
 
-      if (!obj.name_ && using) {
+      if (!this.$obj.name_ && using) {
         result.name = using.entity;
       }
 

@@ -1,16 +1,24 @@
 import camelcase from 'camelcase';
-import { INamedModel, INamedModelStorage, IInstrumented } from './interfaces';
 
-export class RelationBase implements INamedModel, IInstrumented<INamedModel> {
+export type RelationBaseInput = {
+  name?: string
+}
+
+export type RelationBaseStorage = {
+  name?: string
+  name_?: string
+}
+
+export class RelationBase {
   /**
    * represents internal object storage
    */
-  protected $obj: INamedModel & INamedModelStorage
+  protected $obj: RelationBaseStorage
 
   /**
    * construct object
    */
-  constructor(obj: INamedModel) {
+  constructor(obj: RelationBaseInput) {
     if (obj) {
       this.updateWith(obj);
     }
@@ -24,21 +32,21 @@ export class RelationBase implements INamedModel, IInstrumented<INamedModel> {
     return JSON.stringify(this.toObject());
   }
 
-  toObject() {
+  toObject(): RelationBaseInput {
     let props = this.$obj;
     return {
       name: props.name || props.name_,
     };
   }
 
-  toJSON() {
+  toJSON(): RelationBaseInput {
     var props = this.$obj;
     return {
       name: props.name_,
     };
   }
 
-  updateWith(obj: INamedModel): void {
+  updateWith(obj: RelationBaseInput): void {
     if (obj) {
 
       const result = this.$obj ? Object.assign({}, this.$obj) : {};
@@ -54,7 +62,7 @@ export class RelationBase implements INamedModel, IInstrumented<INamedModel> {
     }
   }
 
-  clone() {
+  clone(): RelationBase {
     return new (<typeof RelationBase>this.constructor)(this.toJSON());
   }
 }

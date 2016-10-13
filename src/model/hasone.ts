@@ -1,14 +1,19 @@
-import { RelationBase } from './relationbase';
-import { REF_PATTERN } from './definitions';
+import { RelationBase, RelationBaseInput, RelationBaseStorage } from './relationbase';
 import { EntityReference } from './entityreference';
-import camelcase from 'camelcase';
-import { IHasOne, IHasOneInput, IHasOneStorage, IInstrumented, IEntityReference } from './interfaces';
 
+export type HasOneInput = RelationBaseInput & {
+  hasOne: string
+}
+
+export type HasOneStorage = RelationBaseStorage & {
+  hasOne?: EntityReference
+  hasOne_?: string
+}
 
 export class HasOne extends RelationBase {
 
-  $obj: IHasOne & IHasOneStorage
-  constructor(obj: IHasOneInput) {
+  $obj: HasOneStorage
+  constructor(obj: HasOneInput) {
     super(obj);
   }
 
@@ -20,7 +25,7 @@ export class HasOne extends RelationBase {
     return this.$obj ? this.$obj.hasOne : undefined;
   }
 
-  updateWith(obj: IHasOneInput) {
+  updateWith(obj: HasOneInput) {
     if (obj) {
       super.updateWith(obj);
 
@@ -28,13 +33,7 @@ export class HasOne extends RelationBase {
 
       let hasOne_ = obj.hasOne;
 
-      let hasOne;
-      if (hasOne_) {
-        hasOne = new EntityReference();
-        let res = hasOne_.match(REF_PATTERN);
-        hasOne.entity = res[1];
-        hasOne.field = res[2] ? camelcase(res[2].trim()) : '';
-      }
+      let hasOne = new EntityReference(hasOne_);
 
       result.hasOne_ = hasOne_;
       result.hasOne = hasOne;
@@ -74,8 +73,5 @@ export class HasOne extends RelationBase {
         )
       )
     );
-  }
-  clone() {
-    return new (<typeof HasOne>this.constructor)(this.toJSON());
   }
 }
