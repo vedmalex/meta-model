@@ -2,25 +2,7 @@
 import camelcase from 'camelcase';
 import decamelize from 'decamelize';
 import { ModelPackage } from './modelpackage';
-
-import type { EntityStorage, EntityInput } from './entity';
-import type {FieldBaseStorage, FieldBaseInput } from './fieldbase';
-import type {FieldStorage, FieldInput} from './field';
-
-export interface ModelBaseInput {
-  name: string,
-  title?: string,
-  description?: string,
-}
-
-export interface ModelBaseStorage {
-  name: string,
-  title: string,
-  description: string,
-  name_: string,
-  title_: string,
-  description_: string,
-}
+import type {ModelBaseStorage, ModelBaseInput } from './interfaces';
 
 export class ModelBase {
   $obj: ModelBaseStorage
@@ -105,7 +87,7 @@ export class ModelBase {
     }
   }
 
-  clone():ModelBase {
+  clone() {
     return new this.constructor(this.toJSON());
   }
 }

@@ -1,15 +1,6 @@
 /* @flow */
 import { ModelBase } from './modelbase';
-import type {ModelBaseInput, ModelBaseStorage} from './modelbase';
-import type {FieldStorage, FieldInput} from './field';
-
-export interface FieldBaseInput extends ModelBaseInput {
-  entity: string,
-}
-
-export interface FieldBaseStorage extends FieldBaseInput, ModelBaseStorage {
-  entity_: string,
-}
+import type {FieldBaseStorage, FieldBaseInput} from './interfaces';
 
 export class FieldBase extends ModelBase {
   $obj: FieldBaseStorage

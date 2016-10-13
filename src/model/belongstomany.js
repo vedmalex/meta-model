@@ -1,19 +1,7 @@
 /* @flow */
 import { RelationBase} from './relationbase';
-import type { RelationBaseInput, RelationBaseStorage } from './relationbase';
 import { EntityReference } from './entityreference';
-
-export interface BelongsToManyInput extends RelationBaseInput  {
-  belongsToMany: string,
-  using: string,
-}
-
-export interface BelongsToManyStorage extends RelationBaseStorage {
-  belongsToMany: EntityReference,
-  belongsToMany_?: string,
-  using: EntityReference,
-  using_?: string,
-}
+import type {BelongsToManyStorage, BelongsToManyInput} from './interfaces';
 
 export class BelongsToMany extends RelationBase {
 

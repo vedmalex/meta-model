@@ -1,12 +1,6 @@
 /* @flow */
 import { Entity } from './entity';
-import type { EntityInput } from './entity';
-
-export interface ModelPackageInput {
-  name: string,
-  title: ?string,
-  description: ?string,
-}
+import type {ModelPackageInput, EntityInput} from './interfaces';
 
 /** Model package is the storage place of Entities */
 export class ModelPackage {

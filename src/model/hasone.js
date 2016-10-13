@@ -1,16 +1,7 @@
 /* @flow */
 import { RelationBase} from './relationbase';
-import  type { RelationBaseInput, RelationBaseStorage } from './relationbase';
 import { EntityReference } from './entityreference';
-
-export interface HasOneInput extends RelationBaseInput {
-  hasOne: string,
-}
-
-export interface HasOneStorage extends RelationBaseStorage {
-  hasOne: EntityReference,
-  hasOne_?: string,
-}
+import type { HasOneStorage, HasOneInput} from './interfaces';
 
 export class HasOne extends RelationBase {
   $obj: HasOneStorage

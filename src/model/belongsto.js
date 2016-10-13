@@ -1,16 +1,7 @@
 /* @flow */
 import { RelationBase, } from './relationbase';
-import type { RelationBaseInput, RelationBaseStorage } from './relationbase';
 import { EntityReference } from './entityreference';
-
-export interface BelongsToInput extends  RelationBaseInput {
-  belongsTo?: string,
-}
-
-export interface BelongsToStorage extends RelationBaseStorage {
-  belongsTo: EntityReference,
-  belongsTo_?: string,
-}
+import type {BelongsToStorage,BelongsToInput } from './interfaces';
 
 export class BelongsTo extends RelationBase {
   $obj: BelongsToStorage

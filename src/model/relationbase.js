@@ -1,26 +1,11 @@
 /* @flow */
 import camelcase from 'camelcase';
-
-import type { HasOneStorage } from './hasone'
-import type { HasManyStorage } from './hasmany'
-import type { BelongsToStorage } from './belongsto'
-import type { BelongsToManyStorage } from './belongstomany'
-
-export interface RelationBaseInput {
-  name?: string,
-  entity?: string
-}
-
-export interface RelationBaseStorage {
-  name: string,
-  name_: string,
-}
-
+import type {RelationBaseStorage, RelationBaseInput } from './interfaces';
 export class RelationBase {
   /**
    * represents internal object storage
    */
-  $obj: RelationBaseStorage | HasOneStorage | HasManyStorage | BelongsToStorage | BelongsToManyStorage
+  $obj: RelationBaseStorage
 
   /**
    * construct object

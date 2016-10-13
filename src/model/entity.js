@@ -1,13 +1,12 @@
 /* @flow */
 import { ModelBase } from './modelbase';
-import type {ModelBaseInput, ModelBaseStorage } from './modelbase';
 import { Field} from './field';
-import type {FieldInput } from './field';
 import { HasOne } from './hasone';
 import { HasMany } from './hasmany';
 import { BelongsToMany } from './belongstomany';
 import { DEFAULT_ID_FIELD } from './definitions';
 import { ModelPackage } from './modelpackage';
+import {EntityStorage, EntityInput} from './interfaces';
 
 /**
  * 1. тип объекта который входит на updateWith
@@ -15,18 +14,6 @@ import { ModelPackage } from './modelpackage';
  * 3. тип объекта который идет на toJSON
  * 3. тип объекта который идет на выходе clone
  */
-
-export interface EntityInput extends ModelBaseInput {
-  fields: FieldInput[],
-}
-
-export interface EntityStorage extends ModelBaseStorage {
-  fields: Map<string, Field>,
-  relations: Set<string>,
-  identity: Set<string>,
-  required: Set<string>,
-  indexed: Set<string>,
-}
 
 export class Entity extends ModelBase {
   $obj: EntityStorage
@@ -38,7 +25,7 @@ export class Entity extends ModelBase {
     });
   }
 
-  ensureFKs(modelPackage) {
+  ensureFKs(modelPackage:ModelPackage) {
     if (modelPackage) {
       let modelRelations;
       if (modelPackage.relations.has(this.name)) {
@@ -136,7 +123,7 @@ export class Entity extends ModelBase {
     return missing;
   }
 
-  removeIds(modelPackage) {
+  removeIds(modelPackage:ModelPackage) {
     this.identity.forEach((value) => {
       var ids = this.fields.get(value);
       modelPackage.identityFields.delete(ids.idKey.toString());

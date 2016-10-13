@@ -1,11 +1,7 @@
 /* @flow */
 import { DEFAULT_ID_FIELDNAME, REF_PATTERN } from './definitions';
 import camelcase from 'camelcase';
-
-export interface EntityReferenceInput {
-  field: string,
-  entity: string,
-}
+import type {EntityReferenceInput} from './interfaces';
 
 /** Entityt reference implementation */
 export class EntityReference {

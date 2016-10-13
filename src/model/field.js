@@ -1,13 +1,13 @@
 /* @flow */
 import { FieldBase } from './fieldbase';
-import type { RelationBase} from './relationbase';
-import type { FieldBaseInput, FieldBaseStorage } from './fieldbase';
 import { HasOne } from './hasone';
 import { HasMany } from './hasmany';
 import { BelongsTo } from './belongsto';
 import { BelongsToMany } from './belongstomany';
 import { EntityReference } from './entityreference';
 import { ModelPackage } from './modelpackage';
+import type {RelationBase} from './relationbase';
+import type {FieldStorage, FieldInput} from './interfaces';
 
 function discoverFieldType(obj) {
   // сделать проверку по полю...
@@ -24,33 +24,6 @@ function discoverFieldType(obj) {
     return 'undefined';
   }
 };
-
-export interface FieldInput extends FieldBaseInput {
-  type?: string,
-  identity?: boolean,
-  indexed?: boolean,
-  required?: boolean,
-  relation: {
-    hasMany?: string,
-    hasOne?: string,
-    belongsTo?: string,
-    belongsToMany?: string,
-    using?: string,
-  }
-}
-
-export interface FieldStorage extends FieldBaseStorage {
-  type: string,
-  identity: boolean,
-  indexed: boolean,
-  required: boolean,
-  type_?: string,
-  idKey: EntityReference,
-  identity_: boolean,
-  required_: boolean,
-  indexed_: boolean,
-  relation: RelationBase,
-}
 
 export class Field extends FieldBase {
   $obj: FieldStorage

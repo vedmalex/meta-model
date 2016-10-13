@@ -1,16 +1,7 @@
 /* @flow */
 import { RelationBase } from './relationbase';
-import type { RelationBaseInput, RelationBaseStorage} from './relationbase'
 import { EntityReference } from './entityreference';
-
-export interface HasManyInput extends RelationBaseInput {
-  hasMany: string,
-}
-
-export interface HasManyStorage extends RelationBaseStorage {
-  hasMany: EntityReference,
-  hasMany_?: string,
-}
+import type {HasManyStorage, HasManyInput} from './interfaces';
 
 export class HasMany extends RelationBase {
 
