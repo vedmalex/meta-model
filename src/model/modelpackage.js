@@ -25,8 +25,6 @@ export class ModelPackage {
       this.description = description || this.name;
     } else if (!name) {
       this.name = 'DefaultPackage';
-      this.title = this.name;
-      this.description = this.name;
     } else {
       this.name = name.name;
       this.title = name.title;
@@ -77,5 +75,14 @@ export class ModelPackage {
     this.entities.forEach((e) => {
       e.ensureFKs(this);
     });
+  }
+
+  toJSON() {
+    return {
+      name: this.name,
+      title: this.title,
+      description: this.description,
+      entities: Array.from(this.entities.values()).map(f => f.name)
+    };
   }
 }
