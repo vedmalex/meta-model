@@ -1,13 +1,13 @@
 /* @flow */
 import { ModelBase } from './modelbase';
-import { Field} from './field';
+import { Field } from './field';
 import { HasOne } from './hasone';
 import { HasMany } from './hasmany';
 import { BelongsTo } from './belongsto';
 import { BelongsToMany } from './belongstomany';
 import { DEFAULT_ID_FIELD } from './definitions';
 import { ModelPackage } from './modelpackage';
-import {EntityStorage, EntityInput} from './interfaces';
+import { EntityStorage, EntityInput } from './interfaces';
 
 /**
  * 1. тип объекта который входит на updateWith
@@ -22,13 +22,13 @@ export class Entity extends ModelBase {
   ensureIds(modelPackage: ModelPackage) {
     this.identity.forEach((value) => {
       var ids = this.fields.get(value);
-      if(ids){
+      if (ids) {
         modelPackage.identityFields.set(ids.idKey.toString(), this);
       }
     });
   }
 
-  ensureFKs(modelPackage:ModelPackage) {
+  ensureFKs(modelPackage: ModelPackage) {
     if (modelPackage) {
       let modelRelations;
       if (modelPackage.relations.has(this.name)) {
@@ -38,17 +38,21 @@ export class Entity extends ModelBase {
         modelPackage.relations.set(this.name, modelRelations);
       }
 
-      if(modelRelations){
+      if (modelRelations) {
         this.relations.forEach((value) => {
           let ref = this.fields.get(value);
           // must be different to apply fixup
-          ref &&  modelRelations && modelRelations.set(ref.name, ref.clone());
+          if (ref && modelRelations) {
+            modelRelations.set(ref.name, ref.clone());
+          }
         });
       }
 
       let missing = this.checkRelations(modelPackage);
       missing.forEach((r) => {
-        modelRelations && modelRelations.delete(r.name);
+        if (modelRelations) {
+          modelRelations.delete(r.name);
+        }
       });
     }
   }
@@ -57,74 +61,78 @@ export class Entity extends ModelBase {
     let missing = [];
     if (modelPackage.relations.has(this.name)) {
       let modelRelations = modelPackage.relations.get(this.name);
-      modelRelations && modelRelations.forEach((field) => {
-        let r = field.relation;
-        let missingRef = true;
-        if (!r.ref.field) {
-          // discover fieldName
-          if (modelPackage.entities.has(r.ref.entity)) {
-            let e = modelPackage.entities.get(r.ref.entity);
-            if(e){
-              let identity = e.identity;
-              (r.ref.field = identity.values().next().value || 'id');
+      if (modelRelations) {
+
+        modelRelations.forEach((field) => {
+          let r = field.relation;
+          let missingRef = true;
+          if (!r.ref.field) {
+            // discover fieldName
+            if (modelPackage.entities.has(r.ref.entity)) {
+              let e = modelPackage.entities.get(r.ref.entity);
+              if (e) {
+                let identity = e.identity;
+                // посмотреть насколько возможна подобная ситуация...
+                (r.ref.field = identity.values().next().value || 'id');
+                missingRef = false;
+              }
+            }
+          }
+
+          if (r instanceof HasOne) {
+            if (modelPackage.entities.has(r.ref.entity)) {
+              let refe = modelPackage.entities.get(r.ref.entity);
+              if (refe && refe.fields.has(r.ref.field)) {
+                missingRef = false;
+              }
+            }
+          } else if (r instanceof HasMany) {
+            if (modelPackage.entities.has(r.ref.entity)) {
+              let refe = modelPackage.entities.get(r.ref.entity);
+              if (refe && refe.fields.has(r.ref.field)) {
+                missingRef = false;
+              }
+            }
+          } else if (r instanceof BelongsToMany) {
+            if (modelPackage.entities.has(r.ref.entity)) {
+              let refe = modelPackage.entities.get(r.ref.entity);
+              if (refe && refe.fields.has(r.ref.field)) {
+                missingRef = false;
+              }
+            } else {
+              let using = r.using;
+              if (using && modelPackage.entities.has(using.entity)) {
+                // здесь нужно будет изменить тип ассоциации
+
+                let replaceRef = r.toJSON();
+                replaceRef.hasMany = replaceRef.using;
+
+                delete replaceRef.belongsToMany;
+                delete replaceRef.using;
+
+                field.$obj.relation = new HasMany(replaceRef);
+                missingRef = false;
+              }
+            }
+          } else if (r instanceof BelongsTo) {
+            if (modelPackage.identityFields.has(r.ref.toString())) {
               missingRef = false;
             }
           }
-        }
 
-        if(r instanceof HasOne){
-          if (modelPackage.entities.has(r.ref.entity)) {
-            let refe = modelPackage.entities.get(r.ref.entity);
-            if (refe && refe.fields.has(r.ref.field)) {
-              missingRef = false;
-            }
+          if (missingRef) {
+            missing.push(field);
           }
-        } else if(r instanceof HasMany){
-          if (modelPackage.entities.has(r.ref.entity)) {
-            let refe = modelPackage.entities.get(r.ref.entity);
-            if (refe && refe.fields.has(r.ref.field)) {
-              missingRef = false;
-            }
-          }
-        } else if (r instanceof BelongsToMany){
-          if (modelPackage.entities.has(r.ref.entity)) {
-            let refe = modelPackage.entities.get(r.ref.entity);
-            if (refe && refe.fields.has(r.ref.field)) {
-              missingRef = false;
-            }
-          } else {
-            let using = r.using;
-            if (using && modelPackage.entities.has(using.entity)) {
-              // здесь нужно будет изменить тип ассоциации
-
-              let replaceRef = r.toJSON();
-              replaceRef.hasMany = replaceRef.using;
-
-              delete replaceRef.belongsToMany;
-              delete replaceRef.using;
-
-              field.$obj.relation = new HasMany(replaceRef);
-              missingRef = false;
-            }
-          }
-        } else if(r instanceof BelongsTo){
-          if (modelPackage.identityFields.has(r.ref.toString())) {
-            missingRef = false;
-          }
-        }
-
-        if (missingRef) {
-          missing.push(field);
-        }
-      });
+        });
+      }
     }
     return missing;
   }
 
-  removeIds(modelPackage:ModelPackage) {
+  removeIds(modelPackage: ModelPackage) {
     this.identity.forEach((value) => {
       var ids = this.fields.get(value);
-      if(ids){
+      if (ids) {
         modelPackage.identityFields.delete(ids.idKey.toString());
       }
     });
@@ -134,7 +142,7 @@ export class Entity extends ModelBase {
     return this.$obj.relations;
   }
 
-  get required():Set<string> {
+  get required(): Set<string> {
     return this.$obj.required;
   }
 
@@ -142,7 +150,7 @@ export class Entity extends ModelBase {
     return this.$obj.identity;
   }
 
-  get fields(): Map<string, Field>{
+  get fields(): Map<string, Field> {
     return this.$obj.fields;
   }
 
@@ -203,7 +211,7 @@ export class Entity extends ModelBase {
           fields.set(f.name, f);
         }
 
-        if(f){
+        if (f) {
           f.makeIdentity();
           indexed.add(f.name);
           identity.add(f.name);

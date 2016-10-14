@@ -9,12 +9,12 @@ import { BelongsToMany } from './belongstomany';
 import { DEFAULT_ID_FIELD } from './definitions';
 
 export {
-  Entity,
-  Field,
-  HasOne,
-  HasMany,
-  BelongsTo,
-  BelongsToMany,
-  ModelPackage,
-  DEFAULT_ID_FIELD,
+Entity,
+Field,
+HasOne,
+HasMany,
+BelongsTo,
+BelongsToMany,
+ModelPackage,
+DEFAULT_ID_FIELD,
 };

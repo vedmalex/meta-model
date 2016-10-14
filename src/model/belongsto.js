@@ -3,6 +3,9 @@ import { RelationBase, } from './relationbase';
 import { EntityReference } from './entityreference';
 import type {BelongsToStorage,BelongsToInput } from './interfaces';
 
+/**
+ * BelongsTo Relation
+ */
 export class BelongsTo extends RelationBase {
   $obj: BelongsToStorage
 
@@ -10,10 +13,16 @@ export class BelongsTo extends RelationBase {
     return this.$obj.belongsTo;
   }
 
+  /**
+   * common for all type Relations
+   */
   get ref(): EntityReference {
     return this.$obj.belongsTo;
   }
 
+  /**
+   * single point update
+   */
   updateWith(obj: BelongsToInput) {
     if (obj) {
       super.updateWith(obj);
@@ -34,7 +43,9 @@ export class BelongsTo extends RelationBase {
     }
   }
 
-  // it get fixed object
+  /**
+   * it get fixed object
+  */
   toObject() {
     let props = this.$obj;
     let res = super.toObject();
@@ -50,7 +61,9 @@ export class BelongsTo extends RelationBase {
     );
   }
 
-  // it get clean object with no default values
+  /**
+   * it get clean object with no default values
+   */
   toJSON() {
     let props = this.$obj;
     let res = super.toJSON();

@@ -38,7 +38,7 @@ export class ModelBase {
     };
   }
 
-  toJSON(modelPackage?: ModelPackage):ModelBaseInput {
+  toJSON(modelPackage?: ModelPackage): ModelBaseInput {
     var props = this.$obj;
     return {
       name: props.name_,
