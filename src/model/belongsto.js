@@ -1,7 +1,7 @@
 /* @flow */
 import { RelationBase, } from './relationbase';
 import { EntityReference } from './entityreference';
-import type {BelongsToStorage,BelongsToInput } from './interfaces';
+import type {BelongsToStorage, BelongsToInput } from './interfaces';
 
 /**
  * BelongsTo Relation
@@ -69,13 +69,11 @@ export class BelongsTo extends RelationBase {
     let res = super.toJSON();
     return JSON.parse(
       JSON.stringify(
-        Object.assign({},
-          res,
-          {
-            belongsTo: props.belongsTo_,
-          }
-        )
+        {
+          ...res,
+        belongsTo: props.belongsTo_,
+        },
       )
     );
-  }
+}
 }

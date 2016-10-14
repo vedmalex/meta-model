@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "./compile.sh"
   },
   "author": "",
   "license": "ISC",
@@ -13,6 +14,7 @@
     "babel-cli": "^6.16.0",
     "babel-eslint": "^7.0.0",
     "babel-plugin-transform-flow-strip-types": "^6.14.0",
+    "babel-plugin-transform-object-rest-spread": "^6.16.0",
     "babel-preset-env": "0.0.6",
     "babel-preset-latest": "^6.16.0",
     "babel-preset-react-app": "^0.2.1",
