@@ -4,10 +4,10 @@ export interface FieldInput extends FieldBaseInput {
   indexed?: boolean,
   required?: boolean,
   relation:
-    { hasMany: string, }
+  { hasMany: string, }
   | { hasOne: string, }
   | { belongsTo: string, }
-  | { belongsToMany: string, using: string,  }
+  | { belongsToMany: string, using: string, }
 }
 
 export interface FieldStorage extends FieldBaseStorage {
@@ -23,7 +23,7 @@ export interface FieldStorage extends FieldBaseStorage {
   relation: RelationBase,
 }
 
-export interface BelongsToInput extends  RelationBaseInput {
+export interface BelongsToInput extends RelationBaseInput {
   belongsTo?: string,
 }
 
@@ -32,7 +32,7 @@ export interface BelongsToStorage extends RelationBaseStorage {
   belongsTo_: string,
 }
 
-export interface BelongsToManyInput extends RelationBaseInput  {
+export interface BelongsToManyInput extends RelationBaseInput {
   belongsToMany: string,
   using: string,
 }
@@ -62,7 +62,7 @@ export interface EntityReferenceInput {
 }
 
 export interface FieldBaseInput extends ModelBaseInput {
-  entity: string,
+  entity: Entity,
 }
 
 export interface FieldBaseStorage extends FieldBaseInput, ModelBaseStorage {
@@ -105,7 +105,7 @@ export interface ModelBaseStorage {
 export interface ModelPackageInput {
   name: string,
   title: ?string,
-  description: ?string,
+    description: ?string,
 }
 
 export interface RelationBaseInput {
