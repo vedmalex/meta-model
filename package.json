@@ -1,13 +1,13 @@
 {
-  "name": "model",
+  "name": "meta-model-dsl",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/model/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "flow check",
     "compile": "./compile.sh"
   },
-  "author": "",
+  "author": "vedmalex",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^6.0.45",
