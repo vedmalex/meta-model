@@ -6,8 +6,8 @@ import { BelongsTo } from './belongsto';
 import { BelongsToMany } from './belongstomany';
 import { EntityReference } from './entityreference';
 import { ModelPackage } from './modelpackage';
-import type {RelationBase} from './relationbase';
-import type {FieldStorage, FieldInput} from './interfaces';
+import type {RelationBase } from './relationbase';
+import type {FieldStorage, FieldInput } from './interfaces';
 
 function discoverFieldType(obj) {
   // сделать проверку по полю...
@@ -42,7 +42,7 @@ export class Field extends FieldBase {
     this.$obj.indexed = this.$obj.identity = this.$obj.identity_ = true;
   }
 
-  get required():boolean {
+  get required(): boolean {
     return this.$obj.required || this.$obj.required_;
   }
 
@@ -58,8 +58,8 @@ export class Field extends FieldBase {
     return this.$obj.relation;
   }
 
-  clone(){
-    return new this.constructor(this.toJSON());
+  clone() {
+    return new this.constructor(this.toObject());
   }
 
   updateWith(obj: FieldInput) {
@@ -98,7 +98,7 @@ export class Field extends FieldBase {
 
       if (obj.relation) {
         let relation_ = obj.relation;
-        let relation : RelationBase;
+        let relation: RelationBase;
 
         switch (discoverFieldType(relation_)) {
           case 'HasOne':
@@ -135,6 +135,7 @@ export class Field extends FieldBase {
         Object.assign({},
           res,
           {
+            entity: props.entity,
             type: props.type || props.type_,
             identity: props.identity || props.identity_,
             required: props.required || props.required_,

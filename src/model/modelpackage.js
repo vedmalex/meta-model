@@ -1,7 +1,7 @@
 /* @flow */
 import { Entity } from './entity';
-import type {Field} from './field';
-import type {ModelPackageInput, EntityInput} from './interfaces';
+import type {Field } from './field';
+import type {ModelPackageInput, EntityInput } from './interfaces';
 
 /** Model package is the storage place of Entities */
 export class ModelPackage {
@@ -18,11 +18,15 @@ export class ModelPackage {
   /** relation cache */
   relations: Map<string, Map<string, Field>>
 
-  constructor(name: string | ModelPackageInput, title?: string, description?: string) {
+  constructor(name?: string | ModelPackageInput, title?: string, description?: string) {
     if (typeof name === 'string') {
-      this.name = name || 'DefaultPackage';
+      this.name = name;
       this.title = title || this.name;
       this.description = description || this.name;
+    } else if (!name) {
+      this.name = 'DefaultPackage';
+      this.title = this.name;
+      this.description = this.name;
     } else {
       this.name = name.name;
       this.title = name.title;
@@ -46,17 +50,17 @@ export class ModelPackage {
   }
 
   /** get Entity by name */
-  get(name:string) {
+  get(name: string) {
     return this.entities.get(name);
   }
 
   /** create entity with json */
-  create(json:EntityInput) {
+  create(json: EntityInput) {
     return this.add(new Entity(json));
   }
 
   /** remove entity from package*/
-  remove(name:string) {
+  remove(name: string) {
     let entity = this.entities.get(name);
     if (entity) {
       this.entities.delete(name);
@@ -64,7 +68,7 @@ export class ModelPackage {
     }
   }
   /** return size of package */
-  get size():number {
+  get size(): number {
     return this.entities.size;
   }
 
