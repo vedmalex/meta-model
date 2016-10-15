@@ -1,6 +1,6 @@
-import { RelationBase} from './relationbase';
+import { RelationBase } from './relationbase';
 import { EntityReference } from './entityreference';
-import {BelongsToManyStorage, BelongsToManyInput} from './interfaces';
+import { BelongsToManyStorage, BelongsToManyInput } from './interfaces';
 
 export class BelongsToMany extends RelationBase {
 

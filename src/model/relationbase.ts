@@ -1,4 +1,4 @@
-import camelcase from 'camelcase';
+import * as camelcase from 'camelcase';
 import { RelationBaseStorage, RelationBaseInput } from './interfaces';
 import { EntityReference } from './entityreference';
 export class RelationBase {

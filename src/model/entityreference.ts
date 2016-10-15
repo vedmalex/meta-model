@@ -1,6 +1,6 @@
 import { DEFAULT_ID_FIELDNAME, REF_PATTERN } from './definitions';
-import camelcase from 'camelcase';
-import {EntityReferenceInput } from './interfaces';
+import * as camelcase from 'camelcase';
+import { EntityReferenceInput } from './interfaces';
 
 /** Entityt reference implementation */
 export class EntityReference {

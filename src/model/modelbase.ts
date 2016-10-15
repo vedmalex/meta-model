@@ -1,7 +1,7 @@
-import camelcase from 'camelcase';
-import decamelize from 'decamelize';
+import * as camelcase from 'camelcase';
+import * as decamelize from 'decamelize';
 import { ModelPackage } from './modelpackage';
-import {ModelBaseStorage, ModelBaseInput } from './interfaces';
+import { ModelBaseStorage, ModelBaseInput } from './interfaces';
 
 export class ModelBase {
   protected $obj: ModelBaseStorage;
