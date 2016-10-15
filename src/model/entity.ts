@@ -1,4 +1,3 @@
-/* @flow */
 import { ModelBase } from './modelbase';
 import { Field } from './field';
 import { HasOne } from './hasone';

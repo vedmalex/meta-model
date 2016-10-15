@@ -1,6 +1,5 @@
-/* @flow */
 import camelcase from 'camelcase';
-import type {RelationBaseStorage, RelationBaseInput } from './interfaces';
+import {RelationBaseStorage, RelationBaseInput } from './interfaces';
 import {EntityReference} from './entityreference';
 export class RelationBase {
   /**

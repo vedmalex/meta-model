@@ -1,7 +1,6 @@
-/* @flow */
 import { Entity } from './entity';
-import type {Field } from './field';
-import type {ModelPackageInput, EntityInput } from './interfaces';
+import {Field } from './field';
+import {ModelPackageInput, EntityInput } from './interfaces';
 
 /** Model package is the storage place of Entities */
 export class ModelPackage {

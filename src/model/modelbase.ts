@@ -1,8 +1,7 @@
-/* @flow */
 import camelcase from 'camelcase';
 import decamelize from 'decamelize';
 import { ModelPackage } from './modelpackage';
-import type {ModelBaseStorage, ModelBaseInput } from './interfaces';
+import {ModelBaseStorage, ModelBaseInput } from './interfaces';
 
 export class ModelBase {
   $obj: ModelBaseStorage

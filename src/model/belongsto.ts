@@ -1,7 +1,6 @@
-/* @flow */
 import { RelationBase, } from './relationbase';
 import { EntityReference } from './entityreference';
-import type {BelongsToStorage, BelongsToInput } from './interfaces';
+import {BelongsToStorage, BelongsToInput } from './interfaces';
 
 /**
  * BelongsTo Relation

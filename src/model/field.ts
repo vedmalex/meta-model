@@ -1,4 +1,3 @@
-/* @flow */
 import { FieldBase } from './fieldbase';
 import { HasOne } from './hasone';
 import { HasMany } from './hasmany';
@@ -6,8 +5,8 @@ import { BelongsTo } from './belongsto';
 import { BelongsToMany } from './belongstomany';
 import { EntityReference } from './entityreference';
 import { ModelPackage } from './modelpackage';
-import type {RelationBase } from './relationbase';
-import type {FieldStorage, FieldInput } from './interfaces';
+import {RelationBase } from './relationbase';
+import {FieldStorage, FieldInput } from './interfaces';
 
 function discoverFieldType(obj) {
   // сделать проверку по полю...
