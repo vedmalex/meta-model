@@ -5,9 +5,9 @@ import {EntityReferenceInput } from './interfaces';
 /** Entityt reference implementation */
 export class EntityReference {
   /** the Entity that is referenced */
-  entity: string
+  public entity: string;
   /** the Identity field */
-  field: string
+  public field: string;
 
   constructor(entity: string | EntityReferenceInput, field?: string) {
     if (typeof entity === 'string' && !field) {
@@ -25,27 +25,27 @@ export class EntityReference {
     }
   }
 
-  clone() {
-    return new (this.constructor)(this);
+  public clone() {
+    return new (<typeof EntityReference>this.constructor)(this);
   }
 
-  toObject() {
+  public toObject() {
     return Object.assign({}, {
       entity: this.entity,
       field: this.field,
-    })
+    });
   }
 
-  toJSON() {
+  public toJSON() {
     return this.toObject();
   }
 
-  updateWith(obj: EntityReferenceInput) {
+  public updateWith(obj: EntityReferenceInput) {
     this.field = obj.field || this.field;
     this.entity = obj.entity || this.entity;
   }
 
-  toString(): string {
+  public toString(): string {
     return `${this.entity}#${this.field || DEFAULT_ID_FIELDNAME}`;
   }
 };

@@ -5,17 +5,17 @@ import {ModelPackageInput, EntityInput } from './interfaces';
 /** Model package is the storage place of Entities */
 export class ModelPackage {
   /** name of the package */
-  name: string
+  public name: string;
   /** display title */
-  title: ?string
+  public title?: string;
   /** description */
-  description: ?string
+  public description?: string;
   /** entity storage */
-  entities: Map<string, Entity>
+  public entities: Map<string, Entity>;
   /** Identity fields cache */
-  identityFields: Map<string, Entity>
+  public identityFields: Map<string, Entity>;
   /** relation cache */
-  relations: Map<string, Map<string, Field>>
+  public relations: Map<string, Map<string, Field>>;
 
   constructor(name?: string | ModelPackageInput, title?: string, description?: string) {
     if (typeof name === 'string') {
@@ -38,7 +38,7 @@ export class ModelPackage {
   }
 
   /** add entity to PAckage */
-  add(entity: Entity) {
+  public add(entity: Entity) {
     if (entity instanceof Entity) {
       this.entities.set(entity.name, entity);
       entity.ensureIds(this);
@@ -47,41 +47,45 @@ export class ModelPackage {
   }
 
   /** get Entity by name */
-  get(name: string) {
+  public get(name: string) {
     return this.entities.get(name);
   }
 
   /** create entity with json */
-  create(json: EntityInput) {
+  public create(json: EntityInput) {
     return this.add(new Entity(json));
   }
 
-  /** remove entity from package*/
-  remove(name: string) {
+  /**
+   * remove entity from package
+   */
+  public remove(name: string) {
     let entity = this.entities.get(name);
     if (entity) {
       this.entities.delete(name);
       entity.removeIds(this);
     }
   }
-  /** return size of package */
+  /**
+   *  return size of package
+   */
   get size(): number {
     return this.entities.size;
   }
 
   /** ensure all foreign keys */
-  ensureAll() {
+  public ensureAll() {
     this.entities.forEach((e) => {
       e.ensureFKs(this);
     });
   }
 
-  toJSON() {
+  public toJSON() {
     return {
       name: this.name,
       title: this.title,
       description: this.description,
-      entities: Array.from(this.entities.values()).map(f => f.name)
+      entities: Array.from(this.entities.values()).map(f => f.name),
     };
   }
 }

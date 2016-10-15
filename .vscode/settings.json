@@ -4,5 +4,7 @@
   "editor.tabSize": 2,
   "javascript.validate.enable": false,
   "eslint.enable": true,
-  "editor.formatOnSave": false
+  "editor.formatOnSave": false,
+  "typescript.validate.enable": true,
+  "tslint.enable": true
 }

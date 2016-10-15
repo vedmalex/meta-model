@@ -25,7 +25,7 @@ function discoverFieldType(obj) {
 };
 
 export class Field extends FieldBase {
-  $obj: FieldStorage
+  protected $obj: FieldStorage;
 
   get type(): string {
     return this.$obj.type;
@@ -36,7 +36,7 @@ export class Field extends FieldBase {
   }
 
   // this is to make sure that if we internally set
-  makeIdentity() {
+  public makeIdentity() {
     this.$obj.idKey = new EntityReference(this.$obj.entity, this.$obj.name);
     this.$obj.indexed = this.$obj.identity = this.$obj.identity_ = true;
   }
@@ -57,34 +57,38 @@ export class Field extends FieldBase {
     return this.$obj.relation;
   }
 
-  clone() {
-    return new this.constructor(this.toObject());
+  set relation(value: RelationBase) {
+    this.$obj.relation = value;
   }
 
-  updateWith(obj: FieldInput) {
+  public clone() {
+    return new (<typeof Field>this.constructor)(this.toObject());
+  }
+
+  public updateWith(obj: FieldInput) {
     if (obj) {
       super.updateWith(obj);
       const result = Object.assign({}, this.$obj);
 
-      let type_ = obj.type;
-      let type = type_ || 'string';
+      let $type = obj.type;
+      let type = $type || 'string';
 
-      let identity_ = obj.identity;
-      let identity = identity_ || false;
+      let $identity = obj.identity;
+      let identity = $identity || false;
 
-      let required_ = obj.required;
-      let required = required_ || false;
+      let $required = obj.required;
+      let required = $required || false;
 
-      let indexed_ = obj.indexed;
-      let indexed = indexed_ || identity;
+      let $indexed = obj.indexed;
+      let indexed = $indexed || identity;
 
-      result.type_ = type_;
+      result.type_ = $type;
       result.type = type;
 
-      result.identity_ = identity_;
+      result.identity_ = $identity;
       result.identity = identity;
 
-      result.indexed_ = indexed_;
+      result.indexed_ = $indexed;
       result.indexed = indexed;
 
       if (result.identity) {
@@ -92,28 +96,28 @@ export class Field extends FieldBase {
         result.idKey = new EntityReference(result.entity, result.name);
       }
 
-      result.required_ = required_;
-      result.required = identity_ || required;
+      result.required_ = $required;
+      result.required = $identity || required;
 
       if (obj.relation) {
-        let relation_ = obj.relation;
+        let $relation = obj.relation;
         let relation: RelationBase;
 
-        switch (discoverFieldType(relation_)) {
+        switch (discoverFieldType($relation)) {
           case 'HasOne':
-            relation = new HasOne(Object.assign({}, relation_, { entity: obj.entity }));
+            relation = new HasOne(Object.assign({}, $relation, { entity: obj.entity }));
             break;
           case 'HasMany':
-            relation = new HasMany(Object.assign({}, relation_, { entity: obj.entity }));
+            relation = new HasMany(Object.assign({}, $relation, { entity: obj.entity }));
             break;
           case 'BelongsToMany':
-            relation = new BelongsToMany(Object.assign({}, relation_, { entity: obj.entity }));
+            relation = new BelongsToMany(Object.assign({}, $relation, { entity: obj.entity }));
             break;
           case 'BelongsTo':
-            relation = new BelongsTo(Object.assign({}, relation_, { entity: obj.entity }));
+            relation = new BelongsTo(Object.assign({}, $relation, { entity: obj.entity }));
             break;
           default:
-            throw new Error('undefined type')
+            throw new Error('undefined type');
         }
 
         result.relation = relation;
@@ -126,7 +130,7 @@ export class Field extends FieldBase {
   }
 
   // it get fixed object
-  toObject(modelPackage?: ModelPackage) {
+  public toObject(modelPackage?: ModelPackage) {
     let props = this.$obj;
     let res = super.toObject();
     return JSON.parse(
@@ -148,7 +152,7 @@ export class Field extends FieldBase {
   }
 
   // it get clean object with no default values
-  toJSON(modelPackage?: ModelPackage) {
+  public toJSON(modelPackage?: ModelPackage) {
     let props = this.$obj;
     let res = super.toJSON();
     return JSON.parse(

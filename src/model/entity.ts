@@ -16,18 +16,18 @@ import { EntityStorage, EntityInput } from './interfaces';
  */
 
 export class Entity extends ModelBase {
-  $obj: EntityStorage
+  protected $obj: EntityStorage;
 
-  ensureIds(modelPackage: ModelPackage) {
+  public ensureIds(modelPackage: ModelPackage) {
     this.identity.forEach((value) => {
-      var ids = this.fields.get(value);
+      let ids = this.fields.get(value);
       if (ids) {
         modelPackage.identityFields.set(ids.idKey.toString(), this);
       }
     });
   }
 
-  ensureFKs(modelPackage: ModelPackage) {
+  public ensureFKs(modelPackage: ModelPackage) {
     if (modelPackage) {
       let modelRelations;
       if (modelPackage.relations.has(this.name)) {
@@ -56,7 +56,7 @@ export class Entity extends ModelBase {
     }
   }
 
-  checkRelations(modelPackage: ModelPackage) {
+  public checkRelations(modelPackage: ModelPackage) {
     let missing = [];
     if (modelPackage.relations.has(this.name)) {
       let modelRelations = modelPackage.relations.get(this.name);
@@ -109,7 +109,7 @@ export class Entity extends ModelBase {
                 delete replaceRef.belongsToMany;
                 delete replaceRef.using;
 
-                field.$obj.relation = new HasMany(replaceRef);
+                field.relation = new HasMany(replaceRef);
                 missingRef = false;
               }
             }
@@ -128,9 +128,9 @@ export class Entity extends ModelBase {
     return missing;
   }
 
-  removeIds(modelPackage: ModelPackage) {
+  public removeIds(modelPackage: ModelPackage) {
     this.identity.forEach((value) => {
-      var ids = this.fields.get(value);
+      let ids = this.fields.get(value);
       if (ids) {
         modelPackage.identityFields.delete(ids.idKey.toString());
       }
@@ -157,7 +157,7 @@ export class Entity extends ModelBase {
     return this.$obj.indexed;
   }
 
-  updateWith(obj: EntityInput) {
+  public updateWith(obj: EntityInput) {
     if (obj) {
       super.updateWith(obj);
 
@@ -228,7 +228,7 @@ export class Entity extends ModelBase {
     }
   }
 
-  toObject(modelPackage?: ModelPackage) {
+  public toObject(modelPackage?: ModelPackage) {
     if (!modelPackage) {
       let props = this.$obj;
       let res = super.toObject();
@@ -273,7 +273,7 @@ export class Entity extends ModelBase {
     }
   }
 
-  toJSON(modelPackage?: ModelPackage) {
+  public toJSON(modelPackage?: ModelPackage) {
     if (!modelPackage) {
       let props = this.$obj;
       let res = super.toJSON();
@@ -298,7 +298,7 @@ export class Entity extends ModelBase {
               res,
               {
                 fields: [...props.fields.values()].map(f => {
-                  let result
+                  let result;
                   if (this.relations.has(f.name)) {
                     if (modelRelations && modelRelations.has(f.name)) {
                       result = f.toJSON(modelPackage);

@@ -1,17 +1,16 @@
 import camelcase from 'camelcase';
-import {RelationBaseStorage, RelationBaseInput } from './interfaces';
-import {EntityReference} from './entityreference';
+import { RelationBaseStorage, RelationBaseInput } from './interfaces';
+import { EntityReference } from './entityreference';
 export class RelationBase {
   /**
    * represents internal object storage
    */
-  $obj: RelationBaseStorage
+  protected $obj: RelationBaseStorage;
 
   /**
    * construct object
    */
   constructor(obj: RelationBaseInput) {
-    this.$obj = { name: '' };
     if (obj) {
       this.updateWith(obj);
     }
@@ -22,44 +21,46 @@ export class RelationBase {
   }
 
   get ref(): EntityReference {
-    return new EntityReference({entity:'', field:''});
+    return new EntityReference({ entity: '', field: '' });
   }
 
-  toString() {
+  public toString() {
     return JSON.stringify(this.toObject());
   }
 
-  toObject(): RelationBaseInput {
+  public toObject(): RelationBaseInput {
     let props = this.$obj;
     return {
       name: props.name || props.name_,
+      entity: props.entity,
     };
   }
 
-  toJSON(): RelationBaseInput {
-    var props = this.$obj;
+  public toJSON(): RelationBaseInput {
+    let props = this.$obj;
     return {
       name: props.name_,
+      entity: props.entity,
     };
   }
 
-  updateWith(obj: any): void {
+  public updateWith(obj: RelationBaseInput): void {
     if (obj) {
 
-      const result = this.$obj ? Object.assign({}, this.$obj) : {};
+      const result: RelationBaseStorage = Object.assign({}, this.$obj);
 
-      let name_ = obj.name;
+      let $name = obj.name;
 
-      let name = name_ ? camelcase(name_.trim()) : name_;
+      let name = $name ? camelcase($name.trim()) : $name;
 
-      result.name_ = name_;
+      result.name_ = $name;
       result.name = name;
 
       this.$obj = Object.assign({}, result);
     }
   }
 
-  clone(): RelationBase {
-    return new (this.constructor)(this.toJSON());
+  public clone(): RelationBase {
+    return new (<typeof RelationBase>this.constructor)(this.toJSON());
   }
 }

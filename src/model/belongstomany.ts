@@ -4,7 +4,7 @@ import {BelongsToManyStorage, BelongsToManyInput} from './interfaces';
 
 export class BelongsToMany extends RelationBase {
 
-  $obj: BelongsToManyStorage
+  protected $obj: BelongsToManyStorage;
 
   get belongsToMany(): EntityReference {
     return this.$obj.belongsToMany;
@@ -18,24 +18,24 @@ export class BelongsToMany extends RelationBase {
     return this.$obj.belongsToMany;
   }
 
-  updateWith(obj: BelongsToManyInput) {
+  public updateWith(obj: BelongsToManyInput) {
     if (obj) {
       super.updateWith(obj);
 
       const result = Object.assign({}, this.$obj);
 
-      let belongsToMany_ = obj.belongsToMany;
+      let $belongsToMany = obj.belongsToMany;
 
-      let using_ = obj.using;
+      let $using = obj.using;
 
       let belongsToMany;
-      if (belongsToMany_) {
-        belongsToMany = new EntityReference(belongsToMany_);
+      if ($belongsToMany) {
+        belongsToMany = new EntityReference($belongsToMany);
       }
 
       let using;
-      if (using_) {
-        using = new EntityReference(using_);
+      if ($using) {
+        using = new EntityReference($using);
       } else {
         using = new EntityReference(`${obj.name || obj.entity}#${obj.entity.toLowerCase()}`);
       }
@@ -44,17 +44,17 @@ export class BelongsToMany extends RelationBase {
         result.name = using.entity;
       }
 
-      result.belongsToMany_ = belongsToMany_;
+      result.belongsToMany_ = $belongsToMany;
       result.belongsToMany = belongsToMany;
 
-      result.using_ = using_;
+      result.using_ = $using;
       result.using = using;
 
       this.$obj = Object.assign({}, result);
     }
   }
   // it get fixed object
-  toObject() {
+  public toObject() {
     let props = this.$obj;
     let res = super.toObject();
     return JSON.parse(
@@ -72,8 +72,8 @@ export class BelongsToMany extends RelationBase {
   }
 
   // it get clean object with no default values
-  toJSON() {
-    var props = this.$obj;
+  public toJSON() {
+    let props = this.$obj;
     let res = super.toJSON();
     return JSON.parse(
       JSON.stringify(
