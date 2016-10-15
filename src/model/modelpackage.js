@@ -30,7 +30,7 @@ export class ModelPackage {
       this.title = name.title;
       this.description = name.description;
     }
-    // список всех entity
+    // список всех entity в пакете
     this.entities = new Map();
     // существующие в пакете identity
     this.identityFields = new Map();

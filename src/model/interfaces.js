@@ -3,6 +3,7 @@ export interface FieldInput extends FieldBaseInput {
   identity?: boolean,
   indexed?: boolean,
   required?: boolean,
+  arguments?: [FieldArgs],
   relation:
   { hasMany: string, }
   | { hasOne: string, }
@@ -15,6 +16,7 @@ export interface FieldStorage extends FieldBaseStorage {
   identity: boolean,
   indexed: boolean,
   required: boolean,
+  arguments?: [FieldArgs],
   type_: string,
   idKey: EntityReference,
   identity_: boolean,
@@ -61,11 +63,20 @@ export interface EntityReferenceInput {
   entity: string,
 }
 
+export interface FieldArgs {
+  name: string,
+  type: string,
+  required: boolean,
+  defaultValue: string,
+}
+
 export interface FieldBaseInput extends ModelBaseInput {
+  args?: [FieldArgs],
   entity: Entity,
 }
 
 export interface FieldBaseStorage extends FieldBaseInput, ModelBaseStorage {
+  args?: [FieldArgs],
   entity_: string,
 }
 
@@ -109,6 +120,10 @@ export interface ModelPackageInput {
 }
 
 export interface RelationBaseInput {
+  /**
+   * нужно в случае когда мы будем показывать атрибут связи, и ассоциацию отедельно???
+   * больше не зачем
+  */
   name?: string,
   entity?: string
 }
