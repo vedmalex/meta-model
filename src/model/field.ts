@@ -5,8 +5,8 @@ import { BelongsTo } from './belongsto';
 import { BelongsToMany } from './belongstomany';
 import { EntityReference } from './entityreference';
 import { ModelPackage } from './modelpackage';
-import {RelationBase } from './relationbase';
-import {FieldStorage, FieldInput } from './interfaces';
+import { RelationBase } from './relationbase';
+import { FieldStorage, FieldInput } from './interfaces';
 
 function discoverFieldType(obj) {
   // сделать проверку по полю...
@@ -61,6 +61,19 @@ export class Field extends FieldBase {
     this.$obj.relation = value;
   }
 
+  public getRefType(pkg: ModelPackage): string | void {
+    if (this.relation) {
+      let ref = this.relation.ref;
+      let link = ref.toString();
+      if (pkg.identityFields.has(link)) {
+        let entity = pkg.identityFields.get(link);
+        if (entity.fields.has(ref.field)) {
+          return entity.fields.get(ref.field).type;
+        }
+      }
+    }
+  }
+
   public clone() {
     return new (<typeof Field>this.constructor)(this.toObject());
   }
@@ -71,7 +84,7 @@ export class Field extends FieldBase {
       const result = Object.assign({}, this.$obj);
 
       let $type = obj.type;
-      let type = $type || 'string';
+      let type = $type || 'String';
 
       let $identity = obj.identity;
       let identity = $identity || false;
@@ -99,7 +112,8 @@ export class Field extends FieldBase {
       result.required_ = $required;
       result.required = $identity || required;
 
-      if (obj.relation) {
+      // identity can't have relation definition
+      if (obj.relation && !$identity) {
         let $relation = obj.relation;
         let relation: RelationBase;
 

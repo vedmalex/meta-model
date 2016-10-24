@@ -1,11 +1,15 @@
 {
   "name": "meta-model-dsl",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "dist/model/index.js",
+  "typescript": {
+    "definition": "dist/model/index.d.ts"
+  },
+  "typings": "dist/model/index.d.ts",
   "scripts": {
     "test": "tslint",
-    "compile": "./compile.sh"
+    "compile": "tsc"
   },
   "author": "vedmalex",
   "license": "ISC",

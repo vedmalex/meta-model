@@ -1,5 +1,5 @@
 import * as camelcase from 'camelcase';
-import { RelationBaseStorage, RelationBaseInput } from './interfaces';
+import { RelationBaseStorage, RelationBaseInput, RelationFields } from './interfaces';
 import { EntityReference } from './entityreference';
 export class RelationBase {
   /**
@@ -20,6 +20,10 @@ export class RelationBase {
     return this.$obj.name;
   }
 
+  get fields(): RelationFields[] {
+    return this.$obj.fields;
+  }
+
   get ref(): EntityReference {
     return new EntityReference({ entity: '', field: '' });
   }
@@ -33,6 +37,7 @@ export class RelationBase {
     return {
       name: props.name || props.name_,
       entity: props.entity,
+      fields: props.fields,
     };
   }
 
@@ -55,6 +60,8 @@ export class RelationBase {
 
       result.name_ = $name;
       result.name = name;
+
+      result.fields = obj.fields || [];
 
       this.$obj = Object.assign({}, result);
     }

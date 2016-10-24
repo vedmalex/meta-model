@@ -98,6 +98,7 @@ export class Entity extends ModelBase {
               if (refe && refe.fields.has(r.ref.field)) {
                 missingRef = false;
               }
+              (r as BelongsToMany).ensureRelationClass(modelPackage);
             } else {
               let using = r.using;
               if (using && modelPackage.entities.has(using.entity)) {
@@ -199,7 +200,7 @@ export class Entity extends ModelBase {
 
       });
 
-      if (identity.size === 0) {
+      if (identity.size === 0 || !(fields.has('_id') || fields.has('id'))) {
         let f;
         if (fields.has('id')) {
           f = fields.get('id');

@@ -8,7 +8,7 @@ export interface FieldInput extends FieldBaseInput {
   indexed?: boolean;
   required?: boolean;
   arguments?: [FieldArgs];
-  relation: { hasMany: string, }
+  relation?: { hasMany: string, }
   | { hasOne: string, }
   | { belongsTo: string, }
   | { belongsToMany: string, using: string, };
@@ -75,7 +75,7 @@ export interface FieldArgs {
 
 export interface FieldBaseInput extends ModelBaseInput {
   args?: [FieldArgs];
-  entity: string;
+  entity?: string;
 }
 
 export interface FieldBaseStorage extends ModelBaseStorage {
@@ -118,19 +118,49 @@ export interface ModelBaseStorage {
   description_: string;
 }
 
-export interface ModelPackageInput {
+export interface ModelPackageInput extends ModelBaseInput {
+  name: string;
+  title?: string;
+  description?: string;
+  entities: string[];
+  mutations: any[];
+}
+
+export interface ModelPackageStore {
+  name: string;
+  title?: string;
+  description?: string;
+  entities: string[];
+  mutations: any[];
+}
+
+export interface MetaModelStore {
+  entities: EntityStorage[];
+  packages: ModelPackageStore[];
+  mutations: MutationStorage[];
   name: string;
   title?: string;
   description?: string;
 }
 
+
 export interface RelationBaseInput {
-/**
- * нужно в случае когда мы будем показывать атрибут связи, и ассоциацию отедельно???
- * больше не зачем
- */
+  /**
+   * нужно в случае когда мы будем показывать атрибут связи, и ассоциацию отедельно???
+   * больше не зачем
+   */
   name?: string;
   entity: string;
+  fields?: RelationFields[];
+}
+
+export interface RelationFields {
+  description: string;
+  name: string;
+  type: string;
+  required: boolean;
+  indexed: boolean;
+  args: FieldArgs[];
 }
 
 export interface RelationBaseStorage {
@@ -138,4 +168,17 @@ export interface RelationBaseStorage {
   name_?: string;
   entity: string;
   entity_: string;
+  fields: RelationFields[];
+}
+
+export interface MutationInput extends ModelBaseInput {
+  args: [FieldArgs];
+  payload: [FieldArgs];
+}
+
+export interface MutationStorage extends ModelBaseStorage {
+  args: [FieldArgs];
+  args_: [FieldArgs];
+  payload: [FieldArgs];
+  payload_: [FieldArgs];
 }

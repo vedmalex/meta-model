@@ -12,6 +12,11 @@
     "rootDir": "src",
     "outDir": "dist",
     "allowSyntheticDefaultImports": true,
-    "removeComments": true
-  }
+    "removeComments": true,
+    "pretty": true
+  },
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

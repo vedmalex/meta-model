@@ -14,14 +14,14 @@ export class EntityReference {
       let res = entity.match(REF_PATTERN);
       if (res && res.length > 0) {
         this.entity = res[1];
-        this.field = res[2] ? camelcase(res[2].trim()) : '';
+        this.field = res[2] ? camelcase(res[2].trim()) : 'id';
       }
     } else if (typeof entity === 'string') {
       this.entity = entity;
       this.field = field || 'id';
     } else if (entity instanceof Object) {
       this.entity = entity.entity;
-      this.field = entity.field;
+      this.field = entity.field || 'id';
     }
   }
 

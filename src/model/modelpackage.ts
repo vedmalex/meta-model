@@ -1,6 +1,8 @@
 import { Entity } from './entity';
 import { Field } from './field';
-import { ModelPackageInput, EntityInput } from './interfaces';
+import { ModelPackageInput, EntityInput} from './interfaces';
+import { MetaModel } from './metamodel';
+import { Mutation } from './mutation';
 
 /** Model package is the storage place of Entities */
 export class ModelPackage {
@@ -11,13 +13,16 @@ export class ModelPackage {
   /** description */
   public description?: string;
   /** entity storage */
-  public entities: Map<string, Entity>;
+  public entities: Map<string, Entity> = new Map();
   /** Identity fields cache */
-  public identityFields: Map<string, Entity>;
+  public identityFields: Map<string, Entity> = new Map();
   /** relation cache */
-  public relations: Map<string, Map<string, Field>>;
+  public relations: Map<string, Map<string, Field>> = new Map();
+  public mutations: Map<string, Mutation> = new Map();
 
-  constructor(name?: string | ModelPackageInput, title?: string, description?: string) {
+  public metaModel: MetaModel;
+
+  constructor(name?: string | ModelPackageInput, title?: string, description?: string, parent?: MetaModel) {
     if (typeof name === 'string') {
       this.name = name;
       this.title = title || this.name;
@@ -29,21 +34,28 @@ export class ModelPackage {
       this.title = name.title;
       this.description = name.description;
     }
-    // список всех entity в пакете
-    this.entities = new Map();
-    // существующие в пакете identity
-    this.identityFields = new Map();
-    // ref для исправлений
-    this.relations = new Map();
   }
 
-  /** add entity to PAckage */
-  public add(entity: Entity) {
+  public connect(metaModel: MetaModel) {
+    this.metaModel = metaModel;
+  }
+
+  /** add entity to Package */
+  public addEntity(entity: Entity) {
     if (entity instanceof Entity) {
       this.entities.set(entity.name, entity);
       entity.ensureIds(this);
     }
+    this.ensureEntity(entity);
     return entity;
+  }
+
+  public addMutation(mutation: Mutation) {
+    if (mutation instanceof Mutation) {
+      this.mutations.set(mutation.name, mutation);
+    }
+    this.ensureMutation(mutation);
+    return mutation;
   }
 
   /** get Entity by name */
@@ -53,7 +65,7 @@ export class ModelPackage {
 
   /** create entity with json */
   public create(json: EntityInput) {
-    return this.add(new Entity(json));
+    return this.addEntity(new Entity(json));
   }
 
   /**
@@ -80,12 +92,34 @@ export class ModelPackage {
     });
   }
 
-  public toJSON() {
+  public toJSON(): ModelPackageInput {
     return {
       name: this.name,
       title: this.title,
       description: this.description,
       entities: Array.from(this.entities.values()).map(f => f.name),
+      mutations: Array.from(this.mutations.values()).map(f => f.toJSON()),
     };
+  }
+
+  public toObject() {
+    return {
+      name: this.name,
+      title: this.title,
+      description: this.description,
+      entities: Array.from(this.entities.values()).map(f => f.toObject(this)),
+      mutations: Array.from(this.mutations.values()).map(f => f.toObject(this)),
+    };
+  }
+
+  private ensureEntity(entity) {
+    if (!this.metaModel.entityList.has(entity.name)) {
+      this.metaModel.entityList.set(entity.name, entity);
+    }
+  }
+  private ensureMutation(entity) {
+    if (!this.metaModel.mutationList.has(entity.name)) {
+      this.metaModel.mutationList.set(entity.name, entity);
+    }
   }
 }
