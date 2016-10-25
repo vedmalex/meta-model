@@ -29,8 +29,12 @@ export class RelationBase {
     return new EntityReference({ entity: '', field: '' });
   }
 
+  get verb() {
+    return this.$obj.verb;
+  }
+
   get relationName() {
-    return `${this.$obj.entity} ${this.$obj.verb} ${capitalize(this.$obj.field)}`;
+    return this.name || `${this.$obj.entity}${this.$obj.verb}${capitalize(this.$obj.field)}`;
   }
 
   public toString() {
@@ -61,6 +65,7 @@ export class RelationBase {
     if (obj) {
 
       const result: RelationBaseStorage = Object.assign({}, this.$obj);
+      result.verb = 'NotDefinetlyRelated';
 
       let $name = obj.name;
 
@@ -83,7 +88,6 @@ export class RelationBase {
       result.field = field;
       result.field_ = $field;
 
-      result.verb = 'NotDefinetlyRelated';
       this.$obj = Object.assign({}, result);
     }
   }

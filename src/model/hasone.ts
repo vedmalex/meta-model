@@ -18,6 +18,7 @@ export class HasOne extends RelationBase {
       super.updateWith(obj);
 
       const result = Object.assign({}, this.$obj);
+      result.verb = 'HasOne';
 
       let $hasOne = obj.hasOne;
       let hasOne = new EntityReference($hasOne);
@@ -25,7 +26,6 @@ export class HasOne extends RelationBase {
       result.hasOne_ = $hasOne;
       result.hasOne = hasOne;
 
-      result.verb = 'HasOne';
       this.$obj = Object.assign({}, result);
     }
   }

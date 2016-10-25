@@ -19,6 +19,7 @@ export class HasMany extends RelationBase {
       super.updateWith(obj);
 
       const result = Object.assign({}, this.$obj);
+      result.verb = 'HasMany';
 
       let $hasMany = obj.hasMany;
 
@@ -30,7 +31,6 @@ export class HasMany extends RelationBase {
       result.hasMany_ = $hasMany;
       result.hasMany = hasMany;
 
-      result.verb = 'HasMany';
       this.$obj = Object.assign({}, result);
     }
   }

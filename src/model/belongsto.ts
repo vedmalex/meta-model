@@ -27,6 +27,7 @@ export class BelongsTo extends RelationBase {
       super.updateWith(obj);
 
       const result = Object.assign({}, this.$obj);
+      result.verb = 'BelongsTo';
 
       let $belongsTo = obj.belongsTo;
 
@@ -38,7 +39,6 @@ export class BelongsTo extends RelationBase {
       result.belongsTo_ = $belongsTo;
       result.belongsTo = belongsTo;
 
-      result.verb = 'BelongsTo';
       this.$obj = Object.assign({}, result);
     }
   }

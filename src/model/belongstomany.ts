@@ -62,6 +62,7 @@ export class BelongsToMany extends RelationBase {
       super.updateWith(obj);
 
       const result = Object.assign({}, this.$obj);
+      result.verb = 'BelongsToMany';
 
       let $belongsToMany = obj.belongsToMany;
 
@@ -89,7 +90,6 @@ export class BelongsToMany extends RelationBase {
       result.using_ = $using;
       result.using = using;
 
-      result.verb = 'BelongsToMany';
       this.$obj = Object.assign({}, result);
     }
   }
