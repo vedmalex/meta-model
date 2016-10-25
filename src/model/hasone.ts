@@ -19,6 +19,9 @@ export class HasOne extends RelationBase {
 
       const result = Object.assign({}, this.$obj);
       result.verb = 'HasOne';
+      result.single = true;
+      result.stored = false;
+      result.embedded = false;
 
       let $hasOne = obj.hasOne;
       let hasOne = new EntityReference($hasOne);

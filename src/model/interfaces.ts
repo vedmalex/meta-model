@@ -176,6 +176,9 @@ export interface RelationBaseStorage {
   field_: string;
   fields: RelationFields[];
   verb: string;
+  single: boolean;
+  stored: boolean;
+  embedded: boolean;
 }
 
 export interface MutationInput extends ModelBaseInput {

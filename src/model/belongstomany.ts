@@ -65,6 +65,9 @@ export class BelongsToMany extends RelationBase {
       result.verb = 'BelongsToMany';
 
       let $belongsToMany = obj.belongsToMany;
+      result.single = true;
+      result.stored = false;
+      result.embedded = false;
 
       let $using = obj.using;
 

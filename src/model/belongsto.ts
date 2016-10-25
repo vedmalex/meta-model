@@ -28,6 +28,9 @@ export class BelongsTo extends RelationBase {
 
       const result = Object.assign({}, this.$obj);
       result.verb = 'BelongsTo';
+      result.single = true;
+      result.stored = true;
+      result.embedded = false;
 
       let $belongsTo = obj.belongsTo;
 

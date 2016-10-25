@@ -33,6 +33,21 @@ export class RelationBase {
     return this.$obj.verb;
   }
 
+  // one item per relation
+  get single() {
+    return this.$obj.single;
+  }
+
+  // key is stored in owner side
+  get stored() {
+    return this.$obj.stored;
+  }
+
+  // stored as members of class
+  get emdebbed() {
+    return this.$obj.embedded;
+  }
+
   get relationName() {
     return this.name || `${this.$obj.entity}${this.$obj.verb}${capitalize(this.$obj.field)}`;
   }
