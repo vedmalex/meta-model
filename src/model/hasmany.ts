@@ -17,9 +17,9 @@ export class HasMany extends RelationBase {
   public updateWith(obj: HasManyInput) {
     if (obj) {
       super.updateWith(obj);
+      this.$obj.verb = 'HasMany';
 
       const result = Object.assign({}, this.$obj);
-      result.verb = 'HasMany';
       result.single = false;
       result.stored = false;
       result.embedded = false;

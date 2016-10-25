@@ -60,9 +60,10 @@ export class BelongsToMany extends RelationBase {
   public updateWith(obj: BelongsToManyInput) {
     if (obj) {
       super.updateWith(obj);
+      this.$obj.verb = 'BelongsToMany';
 
       const result = Object.assign({}, this.$obj);
-      result.verb = 'BelongsToMany';
+      result.name = obj.name || this.relationName;
 
       let $belongsToMany = obj.belongsToMany;
       result.single = true;

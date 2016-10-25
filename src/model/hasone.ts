@@ -16,9 +16,9 @@ export class HasOne extends RelationBase {
   public updateWith(obj: HasOneInput) {
     if (obj) {
       super.updateWith(obj);
+      this.$obj.verb = 'HasOne';
 
       const result = Object.assign({}, this.$obj);
-      result.verb = 'HasOne';
       result.single = true;
       result.stored = false;
       result.embedded = false;

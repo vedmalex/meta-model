@@ -25,9 +25,9 @@ export class BelongsTo extends RelationBase {
   public updateWith(obj: BelongsToInput) {
     if (obj) {
       super.updateWith(obj);
+      this.$obj.verb = 'BelongsTo';
 
       const result = Object.assign({}, this.$obj);
-      result.verb = 'BelongsTo';
       result.single = true;
       result.stored = true;
       result.embedded = false;
