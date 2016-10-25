@@ -25,6 +25,7 @@ export class HasOne extends RelationBase {
       result.hasOne_ = $hasOne;
       result.hasOne = hasOne;
 
+      result.verb = 'HasOne';
       this.$obj = Object.assign({}, result);
     }
   }

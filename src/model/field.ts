@@ -119,16 +119,16 @@ export class Field extends FieldBase {
 
         switch (discoverFieldType($relation)) {
           case 'HasOne':
-            relation = new HasOne(Object.assign({}, $relation, { entity: obj.entity }));
+            relation = new HasOne(Object.assign({}, $relation, { entity: obj.entity, field: obj.name }));
             break;
           case 'HasMany':
-            relation = new HasMany(Object.assign({}, $relation, { entity: obj.entity }));
+            relation = new HasMany(Object.assign({}, $relation, { entity: obj.entity, field: obj.name }));
             break;
           case 'BelongsToMany':
-            relation = new BelongsToMany(Object.assign({}, $relation, { entity: obj.entity }));
+            relation = new BelongsToMany(Object.assign({}, $relation, { entity: obj.entity, field: obj.name }));
             break;
           case 'BelongsTo':
-            relation = new BelongsTo(Object.assign({}, $relation, { entity: obj.entity }));
+            relation = new BelongsTo(Object.assign({}, $relation, { entity: obj.entity, field: obj.name }));
             break;
           default:
             throw new Error('undefined type');

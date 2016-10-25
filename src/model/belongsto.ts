@@ -38,6 +38,7 @@ export class BelongsTo extends RelationBase {
       result.belongsTo_ = $belongsTo;
       result.belongsTo = belongsTo;
 
+      result.verb = 'BelongsTo';
       this.$obj = Object.assign({}, result);
     }
   }

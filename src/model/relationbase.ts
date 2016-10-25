@@ -1,3 +1,4 @@
+import capitalize from './../lib/capitalize';
 import * as camelcase from 'camelcase';
 import { RelationBaseStorage, RelationBaseInput, RelationFields } from './interfaces';
 import { EntityReference } from './entityreference';
@@ -28,6 +29,10 @@ export class RelationBase {
     return new EntityReference({ entity: '', field: '' });
   }
 
+  get relationName() {
+    return `${this.$obj.entity} ${this.$obj.verb} ${capitalize(this.$obj.field)}`;
+  }
+
   public toString() {
     return JSON.stringify(this.toObject());
   }
@@ -37,6 +42,7 @@ export class RelationBase {
     return {
       name: props.name || props.name_,
       entity: props.entity,
+      field: props.field,
       fields: props.fields,
     };
   }
@@ -46,6 +52,8 @@ export class RelationBase {
     return {
       name: props.name_,
       entity: props.entity,
+      field: props.field,
+      fields: props.fields,
     };
   }
 
@@ -63,6 +71,19 @@ export class RelationBase {
 
       result.fields = obj.fields || [];
 
+      let $entity = obj.entity;
+      let entity = $entity;
+
+      let $field = obj.field;
+      let field = $field;
+
+      result.entity = entity;
+      result.entity_ = $entity;
+
+      result.field = field;
+      result.field_ = $field;
+
+      result.verb = 'NotDefinetlyRelated';
       this.$obj = Object.assign({}, result);
     }
   }

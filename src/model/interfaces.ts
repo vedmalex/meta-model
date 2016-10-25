@@ -8,10 +8,13 @@ export interface FieldInput extends FieldBaseInput {
   indexed?: boolean;
   required?: boolean;
   arguments?: [FieldArgs];
-  relation?: { hasMany: string, }
-  | { hasOne: string, }
-  | { belongsTo: string, }
-  | { belongsToMany: string, using: string, };
+  relation?: ({ hasMany: string, }
+    | { hasOne: string, }
+    | { belongsTo: string, }
+    | { belongsToMany: string, using: string, }) & {
+    entity: string;
+    field: string;
+  };
 }
 
 export interface FieldStorage extends FieldBaseStorage {
@@ -151,6 +154,7 @@ export interface RelationBaseInput {
    */
   name?: string;
   entity: string;
+  field: string;
   fields?: RelationFields[];
 }
 
@@ -168,7 +172,10 @@ export interface RelationBaseStorage {
   name_?: string;
   entity: string;
   entity_: string;
+  field: string;
+  field_: string;
   fields: RelationFields[];
+  verb: string;
 }
 
 export interface MutationInput extends ModelBaseInput {

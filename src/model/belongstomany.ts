@@ -89,6 +89,7 @@ export class BelongsToMany extends RelationBase {
       result.using_ = $using;
       result.using = using;
 
+      result.verb = 'BelongsToMany';
       this.$obj = Object.assign({}, result);
     }
   }

@@ -30,6 +30,7 @@ export class HasMany extends RelationBase {
       result.hasMany_ = $hasMany;
       result.hasMany = hasMany;
 
+      result.verb = 'HasMany';
       this.$obj = Object.assign({}, result);
     }
   }
