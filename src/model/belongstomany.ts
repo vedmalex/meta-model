@@ -66,7 +66,7 @@ export class BelongsToMany extends RelationBase {
             type: 'ID',
             indexed: true,
           }, {
-            name: decapitalize(this.using.entity),
+            name: decapitalize(this.ref.entity),
             type: refe.fields.get(this.ref.field).type,
             indexed: true,
           },
@@ -85,6 +85,7 @@ export class BelongsToMany extends RelationBase {
         }
       } else {
         // Проверить что все необходимые поля созданы.
+        // проверить типы.... ?
         let using = modelPackage.entities.get(this.using.entity);
         if (!using.fields.has(this.using.field)) {
           let refe = modelPackage.entities.get(this.ref.entity);
@@ -133,7 +134,7 @@ export class BelongsToMany extends RelationBase {
         // this single end association to other
         // this.$obj.verb = 'HasMany';
         let relName = `${this.$obj.entity}${capitalize(this.$obj.field)}`;
-        using = new EntityReference(`${obj.name || relName}#${obj.entity.toLowerCase()}`);
+        using = new EntityReference(`${obj.name || relName}#${decapitalize(obj.entity)}`);
       }
 
       if (!this.$obj.name_ && using) {
