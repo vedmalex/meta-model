@@ -28,7 +28,7 @@ export class Entity extends ModelBase {
   }
 
   public ensureFKs(modelPackage: ModelPackage): Field[] {
-    let missing: Field[];
+    let missing: Field[] = [];
     if (modelPackage) {
       let modelRelations;
       if (modelPackage.relations.has(this.name)) {
