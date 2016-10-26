@@ -91,7 +91,7 @@ export class ModelPackage {
     this.entities.forEach((e) => {
       missing = [
         ...missing,
-        ...e.ensureFKs(this)
+        ...e.ensureFKs(this),
       ];
     });
     return missing;

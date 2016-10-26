@@ -50,7 +50,7 @@ export class Entity extends ModelBase {
 
       missing = [
           ...missing,
-          ...this.checkRelations(modelPackage)
+          ...this.checkRelations(modelPackage),
       ];
       missing.forEach((r) => {
         if (modelRelations) {
