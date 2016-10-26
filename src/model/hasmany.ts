@@ -1,13 +1,12 @@
-/* @flow */
 import { RelationBase } from './relationbase';
 import { EntityReference } from './entityreference';
-import type {HasManyStorage, HasManyInput} from './interfaces';
+import { HasManyStorage, HasManyInput } from './interfaces';
 
 export class HasMany extends RelationBase {
 
-  $obj: HasManyStorage
+  protected $obj: HasManyStorage;
 
-  get hasMany() :EntityReference{
+  get hasMany(): EntityReference {
     return this.$obj.hasMany;
   }
 
@@ -15,27 +14,31 @@ export class HasMany extends RelationBase {
     return this.$obj.hasMany;
   }
 
-  updateWith(obj: HasManyInput) {
+  public updateWith(obj: HasManyInput) {
     if (obj) {
       super.updateWith(obj);
+      this.$obj.verb = 'HasMany';
 
       const result = Object.assign({}, this.$obj);
+      result.single = false;
+      result.stored = false;
+      result.embedded = false;
 
-      let hasMany_ = obj.hasMany;
+      let $hasMany = obj.hasMany;
 
       let hasMany;
-      if (hasMany_) {
-        hasMany = new EntityReference(hasMany_);
+      if ($hasMany) {
+        hasMany = new EntityReference($hasMany);
       }
 
-      result.hasMany_ = hasMany_;
+      result.hasMany_ = $hasMany;
       result.hasMany = hasMany;
 
       this.$obj = Object.assign({}, result);
     }
   }
   // it get fixed object
-  toObject() {
+  public toObject() {
     let props = this.$obj;
     let res = super.toObject();
     return JSON.parse(
@@ -52,8 +55,8 @@ export class HasMany extends RelationBase {
   }
 
   // it get clean object with no default values
-  toJSON() {
-    var props = this.$obj;
+  public toJSON() {
+    let props = this.$obj;
     let res = super.toJSON();
     return JSON.parse(
       JSON.stringify(

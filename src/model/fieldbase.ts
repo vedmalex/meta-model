@@ -1,9 +1,8 @@
-/* @flow */
 import { ModelBase } from './modelbase';
-import type {FieldBaseStorage, FieldBaseInput, FieldArgs } from './interfaces';
+import {FieldBaseStorage, FieldBaseInput, FieldArgs } from './interfaces';
 
 export class FieldBase extends ModelBase {
-  $obj: FieldBaseStorage
+  protected $obj: FieldBaseStorage;
 
   get entity(): string {
     return this.$obj.entity;
@@ -13,30 +12,30 @@ export class FieldBase extends ModelBase {
     return this.$obj.args;
   }
 
-  updateWith(obj: FieldBaseInput) {
+  public updateWith(obj: FieldBaseInput) {
     if (obj) {
       super.updateWith(obj);
 
       const result = Object.assign({}, this.$obj);
 
-      let entity_ = obj.entity;
-      let entity = entity_;
+      let $entity = obj.entity;
+      let entity = $entity;
 
-      let args = obj.args || [];
-      let args_ = obj.args;
+      let args = obj.args;
+      let $args = obj.args;
 
       result.entity = entity;
-      result.entity_ = entity_;
+      result.entity_ = $entity;
 
       result.args = args;
-      result.args_ = args_;
+      result.args_ = $args;
 
       this.$obj = Object.assign({}, result);
     }
   }
 
   // it get fixed object
-  toObject() {
+  public toObject() {
     let props = this.$obj;
     let res = super.toObject();
     return JSON.parse(
@@ -54,7 +53,7 @@ export class FieldBase extends ModelBase {
   }
 
   // it get clean object with no default values
-  toJSON() {
+  public toJSON() {
     let props = this.$obj;
     let res = super.toJSON();
     return JSON.parse(

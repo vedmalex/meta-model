@@ -1,11 +1,10 @@
-/* @flow */
-import camelcase from 'camelcase';
-import decamelize from 'decamelize';
+import * as camelcase from 'camelcase';
+import * as decamelize from 'decamelize';
 import { ModelPackage } from './modelpackage';
-import type {ModelBaseStorage, ModelBaseInput } from './interfaces';
+import { ModelBaseStorage, ModelBaseInput } from './interfaces';
 
 export class ModelBase {
-  $obj: ModelBaseStorage
+  protected $obj: ModelBaseStorage;
 
   constructor(obj: ModelBaseInput) {
     if (obj) {
@@ -25,11 +24,11 @@ export class ModelBase {
     return this.$obj.description;
   }
 
-  toString() {
+  public toString() {
     return JSON.stringify(this.toObject());
   }
 
-  toObject(modelPackage?: ModelPackage) {
+  public toObject(modelPackage?: ModelPackage) {
     let props = this.$obj;
     return {
       name: props.name,
@@ -38,8 +37,8 @@ export class ModelBase {
     };
   }
 
-  toJSON(modelPackage?: ModelPackage): ModelBaseInput {
-    var props = this.$obj;
+  public toJSON(modelPackage?: ModelPackage): ModelBaseInput {
+    let props = this.$obj;
     return {
       name: props.name_,
       title: props.title_,
@@ -47,20 +46,20 @@ export class ModelBase {
     };
   }
 
-  updateWith(obj: ModelBaseInput) {
+  public updateWith(obj: ModelBaseInput) {
     if (obj) {
 
       const result: ModelBaseStorage = Object.assign({}, this.$obj);
 
-      let name_ = obj.name;
-      let title_ = obj.title;
-      let description_ = obj.description;
+      let $name = obj.name;
+      let $title = obj.title;
+      let $description = obj.description;
 
-      let name = camelcase(name_.trim());
+      let name = camelcase($name.trim());
 
-      let title = title_ ? title_.trim() : '';
+      let title = $title ? $title.trim() : '';
 
-      let description = description_ ? description_.trim() : '';
+      let description = $description ? $description.trim() : '';
 
       if (!title) {
         title = decamelize(name, ' ');
@@ -68,24 +67,24 @@ export class ModelBase {
       title = (title.slice(0, 1)).toUpperCase() + title.slice(1);
 
       if (!description) {
-        description = title || title_;
+        description = title || $title;
       }
       description = (description.slice(0, 1)).toUpperCase() + description.slice(1);
 
-      result.name_ = name_;
+      result.name_ = $name;
       result.name = name;
 
-      result.title_ = title_;
+      result.title_ = $title;
       result.title = title;
 
-      result.description_ = description_;
+      result.description_ = $description;
       result.description = description;
 
       this.$obj = Object.assign({}, result);
     }
   }
 
-  clone() {
-    return new this.constructor(this.toJSON());
+  public clone() {
+    return new (<typeof ModelBase>this.constructor)(this.toJSON());
   }
 }

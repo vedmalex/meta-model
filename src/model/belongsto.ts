@@ -1,13 +1,12 @@
-/* @flow */
-import { RelationBase, } from './relationbase';
+import { RelationBase } from './relationbase';
 import { EntityReference } from './entityreference';
-import type {BelongsToStorage, BelongsToInput } from './interfaces';
+import { BelongsToStorage, BelongsToInput } from './interfaces';
 
 /**
  * BelongsTo Relation
  */
 export class BelongsTo extends RelationBase {
-  $obj: BelongsToStorage
+  protected $obj: BelongsToStorage;
 
   get belongsTo(): EntityReference {
     return this.$obj.belongsTo;
@@ -23,20 +22,24 @@ export class BelongsTo extends RelationBase {
   /**
    * single point update
    */
-  updateWith(obj: BelongsToInput) {
+  public updateWith(obj: BelongsToInput) {
     if (obj) {
       super.updateWith(obj);
+      this.$obj.verb = 'BelongsTo';
 
       const result = Object.assign({}, this.$obj);
+      result.single = true;
+      result.stored = true;
+      result.embedded = false;
 
-      let belongsTo_ = obj.belongsTo;
+      let $belongsTo = obj.belongsTo;
 
       let belongsTo;
-      if (belongsTo_) {
-        belongsTo = new EntityReference(belongsTo_);
+      if ($belongsTo) {
+        belongsTo = new EntityReference($belongsTo);
       }
 
-      result.belongsTo_ = belongsTo_;
+      result.belongsTo_ = $belongsTo;
       result.belongsTo = belongsTo;
 
       this.$obj = Object.assign({}, result);
@@ -45,8 +48,8 @@ export class BelongsTo extends RelationBase {
 
   /**
    * it get fixed object
-  */
-  toObject() {
+   */
+  public toObject() {
     let props = this.$obj;
     let res = super.toObject();
     return JSON.parse(
@@ -64,16 +67,19 @@ export class BelongsTo extends RelationBase {
   /**
    * it get clean object with no default values
    */
-  toJSON() {
+  public toJSON() {
     let props = this.$obj;
     let res = super.toJSON();
     return JSON.parse(
       JSON.stringify(
-        {
-          ...res,
-        belongsTo: props.belongsTo_,
-        },
+        Object.assign(
+          {},
+          res,
+          {
+            belongsTo: props.belongsTo_,
+          },
+        )
       )
     );
-}
+  }
 }
