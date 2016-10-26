@@ -1,3 +1,4 @@
+import capitalize from './../lib/capitalize';
 import decapitalize from './../lib/decapitalize';
 import { RelationBase } from './relationbase';
 import { EntityReference } from './entityreference';
@@ -129,7 +130,10 @@ export class BelongsToMany extends RelationBase {
       if ($using) {
         using = new EntityReference($using);
       } else {
-        using = new EntityReference(`${obj.name || obj.entity}#${obj.entity.toLowerCase()}`);
+        // this single end association to other
+        // this.$obj.verb = 'HasMany';
+        let relName = `${this.$obj.entity}${capitalize(this.$obj.field)}`;
+        using = new EntityReference(`${obj.name || relName}#${obj.entity.toLowerCase()}`);
       }
 
       if (!this.$obj.name_ && using) {
