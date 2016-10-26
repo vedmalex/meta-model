@@ -87,12 +87,12 @@ export class BelongsToMany extends RelationBase {
         // Проверить что все необходимые поля созданы.
         // проверить типы.... ?
         let using = modelPackage.entities.get(this.using.entity);
-        if (!using.fields.has(this.using.field)) {
+        // if (!using.fields.has(this.using.field)) {
           let refe = modelPackage.entities.get(this.ref.entity);
 
           let update = using.toJSON();
           // проверить поля на отсутствие повторов.
-          update.fields = [
+          let fieldsMap = [
             {
               name: this.using.field,
               type: refe.fields.get(this.ref.field).type,
@@ -100,9 +100,14 @@ export class BelongsToMany extends RelationBase {
             },
             ...update.fields,
             ...this.fields,
-          ];
+          ].reduce((hash, curr) => {
+            hash.set(curr.name, curr);
+            return hash;
+          }, new Map<string, FieldInput>());
+
+          update.fields = Array.from(fieldsMap.values());
           using.updateWith(update);
-        }
+        // }
       }
     }
   }
@@ -116,7 +121,7 @@ export class BelongsToMany extends RelationBase {
       result.name = obj.name || this.relationName;
 
       let $belongsToMany = obj.belongsToMany;
-      result.single = true;
+      result.single = false;
       result.stored = false;
       result.embedded = false;
 

@@ -86,10 +86,15 @@ export class ModelPackage {
   }
 
   /** ensure all foreign keys */
-  public ensureAll() {
+  public ensureAll(): Field[] {
+    let missing: Field[] = [];
     this.entities.forEach((e) => {
-      e.ensureFKs(this);
+      missing = [
+        ...missing,
+        ...e.ensureFKs(this)
+      ];
     });
+    return missing;
   }
 
   public toJSON(): ModelPackageInput {

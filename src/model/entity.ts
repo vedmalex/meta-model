@@ -27,7 +27,8 @@ export class Entity extends ModelBase {
     });
   }
 
-  public ensureFKs(modelPackage: ModelPackage) {
+  public ensureFKs(modelPackage: ModelPackage): Field[] {
+    let missing: Field[];
     if (modelPackage) {
       let modelRelations;
       if (modelPackage.relations.has(this.name)) {
@@ -47,16 +48,20 @@ export class Entity extends ModelBase {
         });
       }
 
-      let missing = this.checkRelations(modelPackage);
+      missing = [
+          ...missing,
+          ...this.checkRelations(modelPackage)
+      ];
       missing.forEach((r) => {
         if (modelRelations) {
           modelRelations.delete(r.name);
         }
       });
-    }
+      }
+    return missing || [];
   }
 
-  public checkRelations(modelPackage: ModelPackage) {
+  public checkRelations(modelPackage: ModelPackage): Field[] {
     let missing = [];
     if (modelPackage.relations.has(this.name)) {
       let modelRelations = modelPackage.relations.get(this.name);
@@ -81,24 +86,24 @@ export class Entity extends ModelBase {
           if (r instanceof HasOne) {
             if (modelPackage.entities.has(r.ref.entity)) {
               let refe = modelPackage.entities.get(r.ref.entity);
-              if (refe && refe.fields.has(r.ref.field)) {
+              if (refe && refe.fields.has(r.ref.field) && refe.identity.has(r.ref.field)) {
                 missingRef = false;
               }
             }
           } else if (r instanceof HasMany) {
             if (modelPackage.entities.has(r.ref.entity)) {
               let refe = modelPackage.entities.get(r.ref.entity);
-              if (refe && refe.fields.has(r.ref.field)) {
+              if (refe && refe.fields.has(r.ref.field) && refe.identity.has(r.ref.field)) {
                 missingRef = false;
               }
             }
           } else if (r instanceof BelongsToMany) {
             if (modelPackage.entities.has(r.ref.entity)) {
               let refe = modelPackage.entities.get(r.ref.entity);
-              if (refe && refe.fields.has(r.ref.field)) {
+              if (refe && refe.fields.has(r.ref.field) && refe.identity.has(r.ref.field)) {
                 missingRef = false;
+                (r as BelongsToMany).ensureRelationClass(modelPackage);
               }
-              (r as BelongsToMany).ensureRelationClass(modelPackage);
             } else {
               let using = r.using;
               if (using && modelPackage.entities.has(using.entity)) {
