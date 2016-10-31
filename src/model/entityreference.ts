@@ -46,10 +46,10 @@ export class EntityReference {
         this.$obj = {
           backField: res[1],
           backField_: res[1],
-          entity: res[1],
-          entity_: res[1],
-          field: camelcase(res[2].trim()),
-          field_: camelcase(res[2].trim()) || DEFAULT_ID_FIELDNAME,
+          entity: res[2],
+          entity_: res[2],
+          field: camelcase(res[3].trim()),
+          field_: camelcase(res[3].trim()) || DEFAULT_ID_FIELDNAME,
         };
       }
     } else if (typeof entity === 'string') {
