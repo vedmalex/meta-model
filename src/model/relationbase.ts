@@ -26,7 +26,7 @@ export class RelationBase {
   }
 
   get ref(): EntityReference {
-    return new EntityReference({ entity: '', field: '' });
+    return new EntityReference({ entity: '', field: '', backField: '' });
   }
 
   get verb() {
