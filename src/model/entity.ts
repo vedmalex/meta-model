@@ -49,15 +49,15 @@ export class Entity extends ModelBase {
       }
 
       missing = [
-          ...missing,
-          ...this.checkRelations(modelPackage),
+        ...missing,
+        ...this.checkRelations(modelPackage),
       ];
       missing.forEach((r) => {
         if (modelRelations) {
           modelRelations.delete(r.name);
         }
       });
-      }
+    }
     return missing || [];
   }
 
@@ -86,14 +86,14 @@ export class Entity extends ModelBase {
           if (r instanceof HasOne) {
             if (modelPackage.entities.has(r.ref.entity)) {
               let refe = modelPackage.entities.get(r.ref.entity);
-              if (refe && refe.fields.has(r.ref.field) && refe.identity.has(r.ref.field)) {
+              if (refe && refe.fields.has(r.ref.field) && refe.indexed.has(r.ref.field)) {
                 missingRef = false;
               }
             }
           } else if (r instanceof HasMany) {
             if (modelPackage.entities.has(r.ref.entity)) {
               let refe = modelPackage.entities.get(r.ref.entity);
-              if (refe && refe.fields.has(r.ref.field) && refe.identity.has(r.ref.field)) {
+              if (refe && refe.fields.has(r.ref.field) && refe.indexed.has(r.ref.field)) {
                 missingRef = false;
               }
             }
@@ -120,8 +120,14 @@ export class Entity extends ModelBase {
               }
             }
           } else if (r instanceof BelongsTo) {
-            if (modelPackage.identityFields.has(r.ref.toString())) {
-              missingRef = false;
+            // if (modelPackage.identityFields.has(r.ref.toString())) {
+            //   missingRef = false;
+            // }
+            if (modelPackage.entities.has(r.ref.entity)) {
+              let refe = modelPackage.entities.get(r.ref.entity);
+              if (refe && refe.fields.has(r.ref.field) && refe.identity.has(r.ref.field)) {
+                missingRef = false;
+              }
             }
           }
 
