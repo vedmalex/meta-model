@@ -7,8 +7,10 @@ import { EntityReferenceInput } from './interfaces';
 /** Entityt reference implementation */
 export class EntityReference {
   protected $obj: {
+    backField_: string;
     entity_: string;
     field_: string;
+    backField: string;
     entity: string;
     field: string;
   };
@@ -28,11 +30,22 @@ export class EntityReference {
     this.$obj.field_ = value;
   }
 
-  constructor(entity: string | EntityReferenceInput, field?: string) {
+    /** the Identity field */
+  public get backField(): string {
+    return this.$obj.backField || this.$obj.backField_ || DEFAULT_ID_FIELDNAME;
+  }
+
+  public set backField(value: string) {
+    this.$obj.backField_ = value;
+  }
+
+  constructor(entity: string | EntityReferenceInput, field?: string, backField?: string) {
     if (typeof entity === 'string' && !field) {
       let res = entity.match(REF_PATTERN);
       if (res && res.length > 0) {
         this.$obj = {
+          backField: res[1],
+          backField_: res[1],
           entity: res[1],
           entity_: res[1],
           field: camelcase(res[2].trim()),
@@ -41,6 +54,8 @@ export class EntityReference {
       }
     } else if (typeof entity === 'string') {
       this.$obj = {
+        backField: backField,
+        backField_: backField || DEFAULT_ID_FIELDNAME,
         entity: entity,
         entity_: entity,
         field: field,
@@ -48,6 +63,8 @@ export class EntityReference {
       };
     } else if (entity instanceof Object) {
       this.$obj = {
+        backField: entity.backField,
+        backField_: entity.backField || DEFAULT_ID_FIELDNAME,
         entity: entity.entity,
         entity_: entity.entity,
         field: entity.field,

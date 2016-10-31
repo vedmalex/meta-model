@@ -65,6 +65,7 @@ export interface EntityStorage extends ModelBaseStorage {
 }
 
 export interface EntityReferenceInput {
+  backField: string;
   field: string;
   entity: string;
 }
