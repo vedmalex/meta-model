@@ -6,6 +6,8 @@ import { BelongsToManyStorage, BelongsToManyInput, EntityInput, FieldInput } fro
 import { ModelPackage } from './modelpackage';
 import { Entity } from './entity';
 
+// http://ooad.asf.ru/standarts/UML/spr/Association_class.aspx
+
 export class BelongsToMany extends RelationBase {
 
   protected $obj: BelongsToManyStorage;
@@ -30,8 +32,13 @@ export class BelongsToMany extends RelationBase {
         let refe = modelPackage.entities.get(this.ref.entity);
         let owner = modelPackage.entities.get(this.$obj.entity);
         let relsCandidate = Array.from(refe.relations)
-          .filter(r => refe.fields.get(r).relation.name === this.name)
           // только одноименная связь
+          // было что один класс связки мог быть для связывания разных объектов... это логическая ошибка...
+          // не соответствует UML и вообще представлению о ОО-дизайне.
+          // .filter(r => refe.fields.get(r).relation.name === this.name)
+          // по одноименному классу ассоциации
+          .filter(r => (refe.fields.get(r).relation instanceof BelongsToMany)
+            && (refe.fields.get(r).relation as BelongsToMany).using.entity === this.using.entity)
           .map(r => refe.fields.get(r).relation)
           .filter(r => r instanceof BelongsToMany)[0] as BelongsToMany;
 
@@ -48,6 +55,9 @@ export class BelongsToMany extends RelationBase {
           },
           ...this.fields,
           ].reduce((hash, curr) => {
+            if (hash.has(curr.name)) {
+              curr = Object.assign({}, hash.get(curr.name), curr);
+            }
             hash.set(curr.name, curr);
             return hash;
           }, new Map<string, FieldInput>());
@@ -72,6 +82,9 @@ export class BelongsToMany extends RelationBase {
           },
           ...this.fields,
           ].reduce((hash, curr) => {
+            if (hash.has(curr.name)) {
+              curr = Object.assign({}, hash.get(curr.name), curr);
+            }
             hash.set(curr.name, curr);
             return hash;
           }, new Map<string, FieldInput>());
@@ -88,25 +101,28 @@ export class BelongsToMany extends RelationBase {
         // проверить типы.... ?
         let using = modelPackage.entities.get(this.using.entity);
         // if (!using.fields.has(this.using.field)) {
-          let refe = modelPackage.entities.get(this.ref.entity);
+        let refe = modelPackage.entities.get(this.ref.entity);
 
-          let update = using.toJSON();
-          // проверить поля на отсутствие повторов.
-          let fieldsMap = [
-            {
-              name: this.using.field,
-              type: refe.fields.get(this.ref.field).type,
-              indexed: true,
-            },
-            ...update.fields,
-            ...this.fields,
-          ].reduce((hash, curr) => {
-            hash.set(curr.name, curr);
-            return hash;
-          }, new Map<string, FieldInput>());
+        let update = using.toJSON();
+        // проверить поля на отсутствие повторов.
+        let fieldsMap = [
+          {
+            name: this.using.field,
+            type: refe.fields.get(this.ref.field).type,
+            indexed: true,
+          },
+          ...this.fields,
+          ...update.fields,
+        ].reduce((hash, curr) => {
+          if (hash.has(curr.name)) {
+            curr = Object.assign({}, hash.get(curr.name), curr);
+          }
+          hash.set(curr.name, curr);
+          return hash;
+        }, new Map<string, FieldInput>());
 
-          update.fields = Array.from(fieldsMap.values());
-          using.updateWith(update);
+        update.fields = Array.from(fieldsMap.values());
+        using.updateWith(update);
         // }
       }
     }
