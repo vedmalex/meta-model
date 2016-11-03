@@ -157,10 +157,10 @@ export class BelongsToMany extends RelationBase {
         let relName = `${this.$obj.entity}${capitalize(this.$obj.field)}`;
         using = new EntityReference(`${obj.name || relName}#${decapitalize(obj.entity)}`);
       }
-
-      if (!this.$obj.name_ && using) {
-        result.name = using.entity;
-      }
+      // why? this is need
+      // if (!this.$obj.name_ && using) {
+      //   result.name = using.entity;
+      // }
 
       result.belongsToMany_ = $belongsToMany;
       result.belongsToMany = belongsToMany;
