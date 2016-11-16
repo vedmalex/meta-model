@@ -12,9 +12,10 @@ import { Mutation } from './mutation';
 import { DEFAULT_ID_FIELD } from './definitions';
 import { ModelPackage } from './modelpackage';
 import { RelationBase } from './relationbase';
-import { FieldArgs } from './interfaces';
+import { FieldArgs, MetaModelStore } from './interfaces';
 export {
   FieldArgs,
+  MetaModelStore,
   Entity,
   Field,
   HasOne,

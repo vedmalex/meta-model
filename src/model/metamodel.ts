@@ -22,6 +22,10 @@ export class MetaModel {
     let txt = fs.readFileSync(fileName);
     this.reset();
     let store = JSON.parse(txt.toString()) as MetaModelStore;
+    this.loadPackage(store);
+  }
+
+  public loadPackage(store: MetaModelStore) {
     store.entities.forEach((ent) => {
       this.entityList.set(ent.name, new Entity(ent));
     });
@@ -117,6 +121,7 @@ export class MetaModel {
         this.defaultPackage.addMutation(m);
       });
       defPackage.ensureAll();
+      this.packagesList.set('default', defPackage);
     }
   }
 }
