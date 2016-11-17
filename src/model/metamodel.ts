@@ -20,14 +20,18 @@ export class MetaModel {
 
   public loadModel(fileName: string = this.store) {
     let txt = fs.readFileSync(fileName);
-    this.reset();
     let store = JSON.parse(txt.toString()) as MetaModelStore;
     this.loadPackage(store);
   }
 
   public loadPackage(store: MetaModelStore) {
+    this.reset();
     store.entities.forEach((ent) => {
       this.entityList.set(ent.name, new Entity(ent));
+    });
+
+    store.mutations.forEach(mut => {
+      this.mutationList.set(mut.name, new Mutation(mut as MutationInput));
     });
 
     store.packages.forEach((pckg) => {
@@ -39,10 +43,12 @@ export class MetaModel {
           pack.addEntity(this.entityList.get(e));
         }
       });
+      pckg.mutations.forEach(m => {
+        if (this.mutationList.has(m)) {
+          pack.addMutation(this.mutationList.get(m));
+        }
+      });
       pack.ensureAll();
-    });
-    store.mutations.forEach(mut => {
-      this.mutationList.set(mut.name, new Mutation(mut as MutationInput));
     });
     this.ensureDefaultPackage();
   }
