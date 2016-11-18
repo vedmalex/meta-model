@@ -15,10 +15,6 @@ export class ModelBase {
     return this.$obj.name;
   }
 
-  get plural(): string {
-    return this.$obj.plural;
-  }
-
   get title(): string {
     return this.$obj.title;
   }
@@ -35,7 +31,6 @@ export class ModelBase {
     let props = this.$obj;
     return {
       name: props.name,
-      plural: props.plural,
       title: props.title,
       description: props.description,
     };
@@ -45,7 +40,6 @@ export class ModelBase {
     let props = this.$obj;
     return {
       name: props.name_,
-      plural: props.plural_,
       title: props.title_,
       description: props.description_,
     };
@@ -57,12 +51,10 @@ export class ModelBase {
       const result: ModelBaseStorage = Object.assign({}, this.$obj);
 
       let $name = obj.name;
-      let $plural = obj.plural;
       let $title = obj.title;
       let $description = obj.description;
 
-      let name = inflected.classify($name.trim());
-      let plural = inflected.classify($plural.trim());
+      let name = inflected.camelize($name.trim(), false);
 
       let title = $title ? $title.trim() : '';
 
@@ -79,9 +71,6 @@ export class ModelBase {
 
       result.name_ = $name;
       result.name = name;
-
-      result.plural_ = $plural;
-      result.plural = plural;
 
       result.title_ = $title;
       result.title = title;

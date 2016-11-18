@@ -53,10 +53,13 @@ export interface BelongsToManyStorage extends RelationBaseStorage {
 }
 
 export interface EntityInput extends ModelBaseInput {
+  plural?: string;
   fields: FieldInput[];
 }
 
 export interface EntityStorage extends ModelBaseStorage {
+  plural?: string;
+  plural_?: string;
   fields: Map<string, Field>;
   relations: Set<string>;
   identity: Set<string>;
@@ -109,18 +112,15 @@ export interface HasOneStorage extends RelationBaseStorage {
 
 export interface ModelBaseInput {
   name: string;
-  plural?: string;
   title?: string;
   description?: string;
 }
 
 export interface ModelBaseStorage {
   name: string;
-  plural: string;
   title: string;
   description: string;
   name_: string;
-  plural_: string;
   title_: string;
   description_: string;
 }

@@ -7,6 +7,7 @@ import { BelongsToMany } from './belongstomany';
 import { DEFAULT_ID_FIELD } from './definitions';
 import { ModelPackage } from './modelpackage';
 import { EntityStorage, EntityInput } from './interfaces';
+import * as inflected from 'inflected';
 
 /**
  * 1. тип объекта который входит на updateWith
@@ -149,6 +150,10 @@ export class Entity extends ModelBase {
     });
   }
 
+  get plural(): string {
+    return this.$obj.plural;
+  }
+
   get relations(): Set<string> {
     return this.$obj.relations;
   }
@@ -175,6 +180,12 @@ export class Entity extends ModelBase {
 
       const result = Object.assign({}, this.$obj);
 
+      let $plural = obj.plural;
+      if (!$plural) {
+        $plural = inflected.pluralize(result.name);
+      }
+      let plural = inflected.classify($plural.trim());
+
       result.name = (result.name.slice(0, 1)).toUpperCase() + result.name.slice(1);
 
       const fields = new Map();
@@ -182,6 +193,9 @@ export class Entity extends ModelBase {
       const identity = new Set();
       const required = new Set();
       const indexed = new Set();
+
+      result.plural_ = $plural;
+      result.plural = plural;
 
       obj.fields.forEach(f => {
 
@@ -250,6 +264,7 @@ export class Entity extends ModelBase {
             {},
             res,
             {
+              plural: props.plural,
               fields: [...props.fields.values()].map(f => f.toObject()),
             }
           )
@@ -266,6 +281,7 @@ export class Entity extends ModelBase {
               {},
               res,
               {
+                plural: props.plural,
                 fields: [...props.fields.values()].map(f => {
                   let result;
                   if (this.relations.has(f.name)) {
@@ -293,6 +309,7 @@ export class Entity extends ModelBase {
         Object.assign({},
           res,
           {
+            plural: props.plural_,
             fields: [...props.fields.values()].map(f => f.toJSON()),
           }
         )
@@ -309,6 +326,7 @@ export class Entity extends ModelBase {
               {},
               res,
               {
+                plural: props.plural_,
                 fields: [...props.fields.values()].map(f => {
                   let result;
                   if (this.relations.has(f.name)) {

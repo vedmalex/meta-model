@@ -51,7 +51,7 @@ export class RelationBase {
   get relationName() {
     // в зависимости от типа связи pluralize + singularize
     let ref = this.single ? inflected.singularize(this.$obj.field) : inflected.pluralize(this.$obj.field);
-    return this.name || `${this.$obj.entity}${this.$obj.verb}${inflected.camelize(ref)}`;
+    return this.name || `${this.$obj.entity}${this.$obj.verb}${inflected.camelize(ref, true)}`;
   }
 
   public toString() {
