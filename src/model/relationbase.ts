@@ -1,4 +1,4 @@
-import capitalize from './../lib/capitalize';
+import * as inflected from 'inflected';
 import * as camelcase from 'camelcase';
 import { RelationBaseStorage, RelationBaseInput, RelationFields } from './interfaces';
 import { EntityReference } from './entityreference';
@@ -49,7 +49,9 @@ export class RelationBase {
   }
 
   get relationName() {
-    return this.name || `${this.$obj.entity}${this.$obj.verb}${capitalize(this.$obj.field)}`;
+    // в зависимости от типа связи pluralize + singularize
+    let ref = this.single ? inflected.singularize(this.$obj.field) : inflected.pluralize(this.$obj.field);
+    return this.name || `${this.$obj.entity}${this.$obj.verb}${inflected.camelize(ref)}`;
   }
 
   public toString() {

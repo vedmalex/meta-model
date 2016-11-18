@@ -109,15 +109,18 @@ export interface HasOneStorage extends RelationBaseStorage {
 
 export interface ModelBaseInput {
   name: string;
+  plural?: string;
   title?: string;
   description?: string;
 }
 
 export interface ModelBaseStorage {
   name: string;
+  plural: string;
   title: string;
   description: string;
   name_: string;
+  plural_: string;
   title_: string;
   description_: string;
 }

@@ -1,5 +1,4 @@
-import * as camelcase from 'camelcase';
-import * as decamelize from 'decamelize';
+import * as inflected from 'inflected';
 import { ModelPackage } from './modelpackage';
 import { ModelBaseStorage, ModelBaseInput } from './interfaces';
 
@@ -14,6 +13,10 @@ export class ModelBase {
 
   get name(): string {
     return this.$obj.name;
+  }
+
+  get plural(): string {
+    return this.$obj.plural;
   }
 
   get title(): string {
@@ -32,6 +35,7 @@ export class ModelBase {
     let props = this.$obj;
     return {
       name: props.name,
+      plural: props.plural,
       title: props.title,
       description: props.description,
     };
@@ -41,6 +45,7 @@ export class ModelBase {
     let props = this.$obj;
     return {
       name: props.name_,
+      plural: props.plural_,
       title: props.title_,
       description: props.description_,
     };
@@ -52,27 +57,31 @@ export class ModelBase {
       const result: ModelBaseStorage = Object.assign({}, this.$obj);
 
       let $name = obj.name;
+      let $plural = obj.plural;
       let $title = obj.title;
       let $description = obj.description;
 
-      let name = camelcase($name.trim());
+      let name = inflected.classify($name.trim());
+      let plural = inflected.classify($plural.trim());
 
       let title = $title ? $title.trim() : '';
 
       let description = $description ? $description.trim() : '';
 
       if (!title) {
-        title = decamelize(name, ' ');
+        title = inflected.titleize(name);
       }
-      title = (title.slice(0, 1)).toUpperCase() + title.slice(1);
 
       if (!description) {
         description = title || $title;
       }
-      description = (description.slice(0, 1)).toUpperCase() + description.slice(1);
+      description = inflected.titleize(description);
 
       result.name_ = $name;
       result.name = name;
+
+      result.plural_ = $plural;
+      result.plural = plural;
 
       result.title_ = $title;
       result.title = title;
