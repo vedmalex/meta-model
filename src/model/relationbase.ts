@@ -1,5 +1,4 @@
 import * as inflected from 'inflected';
-import * as camelcase from 'camelcase';
 import { RelationBaseStorage, RelationBaseInput, RelationFields } from './interfaces';
 import { EntityReference } from './entityreference';
 export class RelationBase {
@@ -86,7 +85,7 @@ export class RelationBase {
 
       let $name = obj.name;
 
-      let name = $name ? camelcase($name.trim()) : $name;
+      let name = $name ? inflected.camelize($name.trim()) : $name;
 
       result.name_ = $name;
       result.name = name;

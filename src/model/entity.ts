@@ -179,12 +179,12 @@ export class Entity extends ModelBase {
       super.updateWith(obj);
 
       const result = Object.assign({}, this.$obj);
-
+      result.name = inflected.classify(result.name);
       let $plural = obj.plural;
       if (!$plural) {
         $plural = inflected.pluralize(result.name);
       }
-      let plural = inflected.classify($plural.trim());
+      let plural = inflected.camelize($plural.trim());
 
       result.name = (result.name.slice(0, 1)).toUpperCase() + result.name.slice(1);
 
