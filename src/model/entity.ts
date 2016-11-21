@@ -180,6 +180,9 @@ export class Entity extends ModelBase {
 
       const result = Object.assign({}, this.$obj);
       result.name = inflected.classify(result.name);
+      if (result.name !== obj.name) {
+        console.warn(`Please use singular form of Noun to name entity ${result.name}!=${obj.name}`);
+      }
       let $plural = obj.plural;
       if (!$plural) {
         $plural = inflected.pluralize(result.name);

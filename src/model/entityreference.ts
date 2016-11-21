@@ -1,8 +1,7 @@
 import { DEFAULT_ID_FIELDNAME, REF_PATTERN } from './definitions';
 import * as camelcase from 'camelcase';
 import { EntityReferenceInput } from './interfaces';
-
-
+import * as inflected from 'inflected'; '';
 
 /** Entityt reference implementation */
 export class EntityReference {
@@ -30,7 +29,7 @@ export class EntityReference {
     this.$obj.field_ = value;
   }
 
-    /** the Identity field */
+  /** the Identity field */
   public get backField(): string {
     return this.$obj.backField || this.$obj.backField_ || DEFAULT_ID_FIELDNAME;
   }
@@ -46,7 +45,7 @@ export class EntityReference {
         this.$obj = {
           backField: res[1],
           backField_: res[1],
-          entity: res[2],
+          entity: inflected.classify(res[2]),
           entity_: res[2],
           field: camelcase(res[3].trim()),
           field_: camelcase(res[3].trim()) || DEFAULT_ID_FIELDNAME,
@@ -56,7 +55,7 @@ export class EntityReference {
       this.$obj = {
         backField: backField,
         backField_: backField || DEFAULT_ID_FIELDNAME,
-        entity: entity,
+        entity: inflected.classify(entity),
         entity_: entity,
         field: field,
         field_: field || DEFAULT_ID_FIELDNAME,
@@ -65,7 +64,7 @@ export class EntityReference {
       this.$obj = {
         backField: entity.backField,
         backField_: entity.backField || DEFAULT_ID_FIELDNAME,
-        entity: entity.entity,
+        entity: inflected.classify(entity.entity),
         entity_: entity.entity,
         field: entity.field,
         field_: entity.field || DEFAULT_ID_FIELDNAME,
@@ -79,13 +78,16 @@ export class EntityReference {
 
   public toObject() {
     return Object.assign({}, {
-      entity: this.entity,
-      field: this.field,
+      entity: this.$obj.entity,
+      field: this.$obj.field,
     });
   }
 
   public toJSON() {
-    return this.toObject();
+    return Object.assign({}, {
+      entity: this.$obj.entity_,
+      field: this.$obj.field_,
+    });
   }
 
   public updateWith(obj: EntityReferenceInput) {
