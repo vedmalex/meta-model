@@ -1,3 +1,3 @@
 export default  function decapitalize(name: string): string {
-  return name[0].toLowerCase() + name.slice(1);
+  return name.slice(0, 1).toLowerCase() + name.slice(1);
 }

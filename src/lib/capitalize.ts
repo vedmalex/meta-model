@@ -1,3 +1,3 @@
 export default function capitalize(name: string): string {
-  return name[0].toUpperCase() + name.slice(1);
+  return name.slice(0, 1).toUpperCase() + name.slice(1);
 }
