@@ -86,13 +86,13 @@ export class Field extends FieldBase {
       let $type = obj.type;
       let type = $type || 'String';
 
-      let $identity = obj.identity;
+      let $identity = obj.identity && (!obj.derived || obj.persistent);
       let identity = $identity || false;
 
-      let $required = obj.required;
+      let $required = obj.required && (!obj.derived || obj.persistent);
       let required = $required || false;
 
-      let $indexed = obj.indexed;
+      let $indexed = obj.indexed && (!obj.derived || obj.persistent);
       let indexed = $indexed || identity;
 
       result.type_ = $type;
