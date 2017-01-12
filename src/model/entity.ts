@@ -67,7 +67,6 @@ export class Entity extends ModelBase {
     if (modelPackage.relations.has(this.name)) {
       let modelRelations = modelPackage.relations.get(this.name);
       if (modelRelations) {
-
         modelRelations.forEach((field) => {
           let r = field.relation;
           let missingRef = true;
@@ -92,11 +91,11 @@ export class Entity extends ModelBase {
               }
               if (r.opposite) {
                 let opposite = Array.from(refe.relations)
-                  .find(rel =>
-                    refe.fields.has(rel)
-                    && (refe.fields.get(rel).relation instanceof BelongsTo)
-                  );
-                if (!opposite) {
+                  .find(rel => rel === r.opposite);
+                let wellformed = opposite && refe.fields.has(opposite)
+                  && (refe.fields.get(opposite).relation instanceof BelongsTo);
+
+                if (!wellformed) {
                   missingRef = true;
                 }
               }
@@ -109,11 +108,11 @@ export class Entity extends ModelBase {
               }
               if (r.opposite) {
                 let opposite = Array.from(refe.relations)
-                  .find(rel =>
-                    refe.fields.has(rel)
-                    && (refe.fields.get(rel).relation instanceof BelongsTo)
-                  );
-                if (!opposite) {
+                  .find(rel => rel === r.opposite);
+                let wellformed = opposite && refe.fields.has(opposite)
+                  && (refe.fields.get(opposite).relation instanceof BelongsTo);
+
+                if (!wellformed) {
                   missingRef = true;
                 }
               }
@@ -127,8 +126,11 @@ export class Entity extends ModelBase {
               }
               if (r.opposite) {
                 let opposite = Array.from(refe.relations)
-                  .find(rel => refe.fields.has(rel) && refe.fields.get(rel).relation instanceof BelongsToMany);
-                if (!opposite) {
+                  .find(rel => rel === r.opposite);
+                let wellformed = opposite && refe.fields.has(opposite)
+                  && (refe.fields.get(opposite).relation instanceof BelongsToMany);
+
+                if (!wellformed) {
                   missingRef = true;
                 }
               }
@@ -160,9 +162,18 @@ export class Entity extends ModelBase {
                 let opposite = Array.from(refe.relations)
                   .find(rel =>
                     refe.fields.has(rel)
-                    && (refe.fields.get(rel).relation instanceof HasOne || refe.fields.get(rel).relation instanceof HasMany)
-                  );
+                    && (refe.fields.get(rel).relation instanceof HasOne || refe.fields.get(rel).relation instanceof HasMany),
+                );
                 if (!opposite) {
+                  missingRef = true;
+                }
+              }
+              if (r.opposite) {
+                let opposite = Array.from(refe.relations)
+                  .find(rel => rel === r.opposite);
+                let wellformed = opposite && refe.fields.has(opposite)
+                  && (refe.fields.get(opposite).relation instanceof HasOne || refe.fields.get(opposite).relation instanceof HasMany);
+                if (!wellformed) {
                   missingRef = true;
                 }
               }
@@ -306,9 +317,9 @@ export class Entity extends ModelBase {
             {
               plural: props.plural,
               fields: [...props.fields.values()].map(f => f.toObject()),
-            }
-          )
-        )
+            },
+          ),
+        ),
       );
     } else {
       let modelRelations = modelPackage.relations.get(this.name);
@@ -333,9 +344,9 @@ export class Entity extends ModelBase {
                   }
                   return result;
                 }).filter(f => f),
-              }
-            )
-          )
+              },
+            ),
+          ),
         );
       }
     }
@@ -351,9 +362,9 @@ export class Entity extends ModelBase {
           {
             plural: props.plural_,
             fields: [...props.fields.values()].map(f => f.toJSON()),
-          }
-        )
-      )
+          },
+        ),
+      ),
       );
     } else {
       let modelRelations = modelPackage.relations.get(this.name);
@@ -378,9 +389,9 @@ export class Entity extends ModelBase {
                   }
                   return result;
                 }).filter(f => f),
-              }
-            )
-          )
+              },
+            ),
+          ),
         );
       }
     }
