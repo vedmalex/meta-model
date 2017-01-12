@@ -160,6 +160,7 @@ export interface RelationBaseInput {
   entity: string;
   field: string;
   fields?: RelationFields[];
+  opposite?: string;
 }
 
 export interface RelationFields {
@@ -179,6 +180,7 @@ export interface RelationBaseStorage {
   field: string;
   field_: string;
   fields: RelationFields[];
+  opposite: string;
   verb: string;
   single: boolean;
   stored: boolean;

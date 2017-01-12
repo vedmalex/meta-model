@@ -90,12 +90,32 @@ export class Entity extends ModelBase {
               if (refe && refe.fields.has(r.ref.field) && refe.indexed.has(r.ref.field)) {
                 missingRef = false;
               }
+              if (r.opposite) {
+                let opposite = Array.from(refe.relations)
+                  .find(rel =>
+                    refe.fields.has(rel)
+                    && (refe.fields.get(rel).relation instanceof BelongsTo)
+                  );
+                if (!opposite) {
+                  missingRef = true;
+                }
+              }
             }
           } else if (r instanceof HasMany) {
             if (modelPackage.entities.has(r.ref.entity)) {
               let refe = modelPackage.entities.get(r.ref.entity);
               if (refe && refe.fields.has(r.ref.field) && refe.indexed.has(r.ref.field)) {
                 missingRef = false;
+              }
+              if (r.opposite) {
+                let opposite = Array.from(refe.relations)
+                  .find(rel =>
+                    refe.fields.has(rel)
+                    && (refe.fields.get(rel).relation instanceof BelongsTo)
+                  );
+                if (!opposite) {
+                  missingRef = true;
+                }
               }
             }
           } else if (r instanceof BelongsToMany) {
@@ -104,6 +124,13 @@ export class Entity extends ModelBase {
               if (refe && refe.fields.has(r.ref.field) && refe.identity.has(r.ref.field)) {
                 missingRef = false;
                 (r as BelongsToMany).ensureRelationClass(modelPackage);
+              }
+              if (r.opposite) {
+                let opposite = Array.from(refe.relations)
+                  .find(rel => refe.fields.has(rel) && refe.fields.get(rel).relation instanceof BelongsToMany);
+                if (!opposite) {
+                  missingRef = true;
+                }
               }
             } else {
               let using = r.using;
@@ -128,6 +155,16 @@ export class Entity extends ModelBase {
               let refe = modelPackage.entities.get(r.ref.entity);
               if (refe && refe.fields.has(r.ref.field) && refe.identity.has(r.ref.field)) {
                 missingRef = false;
+              }
+              if (r.opposite) {
+                let opposite = Array.from(refe.relations)
+                  .find(rel =>
+                    refe.fields.has(rel)
+                    && (refe.fields.get(rel).relation instanceof HasOne || refe.fields.get(rel).relation instanceof HasMany)
+                  );
+                if (!opposite) {
+                  missingRef = true;
+                }
               }
             }
           }

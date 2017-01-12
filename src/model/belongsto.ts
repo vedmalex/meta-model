@@ -58,9 +58,9 @@ export class BelongsTo extends RelationBase {
           res,
           {
             belongsTo: props.belongsTo ? props.belongsTo.toString() : undefined,
-          }
-        )
-      )
+          },
+        ),
+      ),
     );
   }
 
@@ -78,8 +78,8 @@ export class BelongsTo extends RelationBase {
           {
             belongsTo: props.belongsTo_,
           },
-        )
-      )
+        ),
+      ),
     );
   }
 }

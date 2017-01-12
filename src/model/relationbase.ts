@@ -47,6 +47,11 @@ export class RelationBase {
     return this.$obj.embedded;
   }
 
+  // opposite entity field with relation def
+  get opposite() {
+    return this.$obj.opposite;
+  }
+
   get relationName() {
     // в зависимости от типа связи pluralize + singularize
     let ref = this.single ? inflected.singularize(this.$obj.field) : inflected.pluralize(this.$obj.field);
@@ -64,6 +69,7 @@ export class RelationBase {
       entity: props.entity,
       field: props.field,
       fields: props.fields,
+      opposite: props.opposite,
     };
   }
 
@@ -74,6 +80,7 @@ export class RelationBase {
       entity: props.entity,
       field: props.field,
       fields: props.fields,
+      opposite: props.opposite,
     };
   }
 
@@ -84,11 +91,14 @@ export class RelationBase {
       result.verb = 'NotDefinetlyRelated';
 
       let $name = obj.name;
+      let opposite = obj.opposite;
 
       let name = $name ? inflected.camelize($name.trim()) : $name;
 
       result.name_ = $name;
       result.name = name;
+
+      result.opposite = opposite;
 
       result.fields = obj.fields || [];
 
