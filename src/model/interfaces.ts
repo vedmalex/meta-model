@@ -82,12 +82,18 @@ export interface FieldArgs {
 
 export interface FieldBaseInput extends ModelBaseInput {
   args?: [FieldArgs];
+  derived: boolean;
+  persistent: boolean;
   entity?: string;
 }
 
 export interface FieldBaseStorage extends ModelBaseStorage {
   args?: [FieldArgs];
   args_?: [FieldArgs];
+  derived: boolean;
+  persistent: boolean;
+  derived_: boolean;
+  persistent_: boolean;
   entity: string;
   entity_: string;
 }

@@ -1,5 +1,5 @@
 import { ModelBase } from './modelbase';
-import {FieldBaseStorage, FieldBaseInput, FieldArgs } from './interfaces';
+import { FieldBaseStorage, FieldBaseInput, FieldArgs } from './interfaces';
 
 export class FieldBase extends ModelBase {
   protected $obj: FieldBaseStorage;
@@ -10,6 +10,16 @@ export class FieldBase extends ModelBase {
 
   get args(): FieldArgs[] {
     return this.$obj.args;
+  }
+
+  // is used with custom resolver
+  get derived() {
+    return this.$obj.derived_;
+  }
+
+  // is retrieved from storage layer
+  get persistent() {
+    return this.$obj.persistent_;
   }
 
   public updateWith(obj: FieldBaseInput) {
@@ -23,6 +33,20 @@ export class FieldBase extends ModelBase {
 
       let args = obj.args;
       let $args = obj.args;
+
+      let derived = obj.derived;
+      let presistent = obj.persistent;
+
+      // wheather it is explicitly defined or has arguments
+      let $derived = obj.derived || (Array.isArray(obj.args) && obj.args.length > 0);
+      // wheather it is explicitly defined or if derived then by default is transient
+      let $presistent = obj.persistent || !$derived;
+
+      result.persistent = presistent;
+      result.derived = derived;
+
+      result.persistent_ = $presistent;
+      result.derived_ = $derived;
 
       result.entity = entity;
       result.entity_ = $entity;
@@ -46,6 +70,8 @@ export class FieldBase extends ModelBase {
           {
             entity: props.entity || props.entity_,
             args: props.args || props.args_,
+            derived: props.derived || props.derived_,
+            persistent: props.persistent || props.persistent_,
           }
         )
       )
@@ -63,6 +89,8 @@ export class FieldBase extends ModelBase {
           res,
           {
             args: props.args_,
+            derived: props.derived_,
+            persistent: props.persistent_,
           }
         )
       )

@@ -93,15 +93,20 @@ export class Entity extends ModelBase {
               if (r.opposite) {
                 let opposite = Array.from(refe.relations)
                   .find(rel => rel === r.opposite);
-                let rel = refe.fields.get(opposite).relation;
-                let wellformed = opposite && refe.fields.has(opposite)
-                  && (rel instanceof BelongsTo);
 
-                if (rel.opposite !== field.name) {
-                  rel.opposite = field.name;
-                }
+                if (refe.fields.has(opposite)) {
+                  let rel = refe.fields.get(opposite).relation;
+                  let wellformed = opposite && refe.fields.has(opposite)
+                    && (rel instanceof BelongsTo);
 
-                if (!wellformed) {
+                  if (rel.opposite !== field.name) {
+                    rel.opposite = field.name;
+                  }
+
+                  if (!wellformed) {
+                    missingRef = true;
+                  }
+                } else {
                   missingRef = true;
                 }
               }
@@ -116,15 +121,19 @@ export class Entity extends ModelBase {
               if (r.opposite) {
                 let opposite = Array.from(refe.relations)
                   .find(rel => rel === r.opposite);
-                let rel = refe.fields.get(opposite).relation;
-                let wellformed = opposite && refe.fields.has(opposite)
-                  && (rel instanceof BelongsTo);
+                if (refe.fields.has(opposite)) {
+                  let rel = refe.fields.get(opposite).relation;
+                  let wellformed = opposite && refe.fields.has(opposite)
+                    && (rel instanceof BelongsTo);
 
-                if (rel.opposite !== field.name) {
-                  rel.opposite = field.name;
-                }
+                  if (rel.opposite !== field.name) {
+                    rel.opposite = field.name;
+                  }
 
-                if (!wellformed) {
+                  if (!wellformed) {
+                    missingRef = true;
+                  }
+                } else {
                   missingRef = true;
                 }
               }
@@ -140,15 +149,19 @@ export class Entity extends ModelBase {
               if (r.opposite) {
                 let opposite = Array.from(refe.relations)
                   .find(rel => rel === r.opposite);
-                let rel = refe.fields.get(opposite).relation;
-                let wellformed = opposite && refe.fields.has(opposite)
-                  && (rel instanceof BelongsToMany);
+                if (refe.fields.has(opposite)) {
+                  let rel = refe.fields.get(opposite).relation;
+                  let wellformed = opposite && refe.fields.has(opposite)
+                    && (rel instanceof BelongsToMany);
 
-                if (rel.opposite !== field.name) {
-                  rel.opposite = field.name;
-                }
+                  if (rel.opposite !== field.name) {
+                    rel.opposite = field.name;
+                  }
 
-                if (!wellformed) {
+                  if (!wellformed) {
+                    missingRef = true;
+                  }
+                } else {
                   missingRef = true;
                 }
               }
@@ -186,15 +199,19 @@ export class Entity extends ModelBase {
               if (r.opposite) {
                 let opposite = Array.from(refe.relations)
                   .find(rel => rel === r.opposite);
-                let rel = refe.fields.get(opposite).relation;
-                let wellformed = opposite && refe.fields.has(opposite)
-                  && (rel instanceof HasOne || rel instanceof HasMany);
+                if (refe.fields.has(opposite)) {
+                  let rel = refe.fields.get(opposite).relation;
+                  let wellformed = opposite && refe.fields.has(opposite)
+                    && (rel instanceof HasOne || rel instanceof HasMany);
 
-                if (rel.opposite !== field.name) {
-                  rel.opposite = field.name;
-                }
+                  if (rel.opposite !== field.name) {
+                    rel.opposite = field.name;
+                  }
 
-                if (!wellformed) {
+                  if (!wellformed) {
+                    missingRef = true;
+                  }
+                } else {
                   missingRef = true;
                 }
               }

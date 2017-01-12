@@ -37,7 +37,7 @@ export class RelationBase {
     return this.$obj.single;
   }
 
-  // key is stored in owner side
+  // key is storage is located in owner side of entity
   get stored() {
     return this.$obj.stored;
   }
