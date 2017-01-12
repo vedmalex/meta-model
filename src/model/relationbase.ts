@@ -52,6 +52,10 @@ export class RelationBase {
     return this.$obj.opposite;
   }
 
+  set opposite(val) {
+    this.$obj.opposite = val;
+  }
+
   get relationName() {
     // в зависимости от типа связи pluralize + singularize
     let ref = this.single ? inflected.singularize(this.$obj.field) : inflected.pluralize(this.$obj.field);

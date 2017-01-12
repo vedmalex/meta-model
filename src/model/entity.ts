@@ -67,7 +67,6 @@ export class Entity extends ModelBase {
     if (modelPackage.relations.has(this.name)) {
       let modelRelations = modelPackage.relations.get(this.name);
       if (modelRelations) {
-
         modelRelations.forEach((field) => {
           let r = field.relation;
           let missingRef = true;
@@ -90,13 +89,19 @@ export class Entity extends ModelBase {
               if (refe && refe.fields.has(r.ref.field) && refe.indexed.has(r.ref.field)) {
                 missingRef = false;
               }
+
               if (r.opposite) {
                 let opposite = Array.from(refe.relations)
-                  .find(rel =>
-                    refe.fields.has(rel)
-                    && (refe.fields.get(rel).relation instanceof BelongsTo)
-                  );
-                if (!opposite) {
+                  .find(rel => rel === r.opposite);
+                let rel = refe.fields.get(opposite).relation;
+                let wellformed = opposite && refe.fields.has(opposite)
+                  && (rel instanceof BelongsTo);
+
+                if (rel.opposite !== field.name) {
+                  rel.opposite = field.name;
+                }
+
+                if (!wellformed) {
                   missingRef = true;
                 }
               }
@@ -107,13 +112,19 @@ export class Entity extends ModelBase {
               if (refe && refe.fields.has(r.ref.field) && refe.indexed.has(r.ref.field)) {
                 missingRef = false;
               }
+
               if (r.opposite) {
                 let opposite = Array.from(refe.relations)
-                  .find(rel =>
-                    refe.fields.has(rel)
-                    && (refe.fields.get(rel).relation instanceof BelongsTo)
-                  );
-                if (!opposite) {
+                  .find(rel => rel === r.opposite);
+                let rel = refe.fields.get(opposite).relation;
+                let wellformed = opposite && refe.fields.has(opposite)
+                  && (rel instanceof BelongsTo);
+
+                if (rel.opposite !== field.name) {
+                  rel.opposite = field.name;
+                }
+
+                if (!wellformed) {
                   missingRef = true;
                 }
               }
@@ -125,18 +136,28 @@ export class Entity extends ModelBase {
                 missingRef = false;
                 (r as BelongsToMany).ensureRelationClass(modelPackage);
               }
+
               if (r.opposite) {
                 let opposite = Array.from(refe.relations)
-                  .find(rel => refe.fields.has(rel) && refe.fields.get(rel).relation instanceof BelongsToMany);
-                if (!opposite) {
+                  .find(rel => rel === r.opposite);
+                let rel = refe.fields.get(opposite).relation;
+                let wellformed = opposite && refe.fields.has(opposite)
+                  && (rel instanceof BelongsToMany);
+
+                if (rel.opposite !== field.name) {
+                  rel.opposite = field.name;
+                }
+
+                if (!wellformed) {
                   missingRef = true;
                 }
               }
             } else {
               let using = r.using;
+              // make sure that relationClass exists or created otherwise
+              (r as BelongsToMany).ensureRelationClass(modelPackage);
               if (using && modelPackage.entities.has(using.entity)) {
                 // здесь нужно будет изменить тип ассоциации
-
                 let replaceRef = r.toJSON();
                 replaceRef.hasMany = replaceRef.using;
 
@@ -145,6 +166,11 @@ export class Entity extends ModelBase {
 
                 field.relation = new HasMany(replaceRef);
                 missingRef = false;
+
+                // no need to has opposite here
+                if (r.opposite) {
+                  r.opposite = undefined;
+                }
               }
             }
           } else if (r instanceof BelongsTo) {
@@ -156,13 +182,19 @@ export class Entity extends ModelBase {
               if (refe && refe.fields.has(r.ref.field) && refe.identity.has(r.ref.field)) {
                 missingRef = false;
               }
+
               if (r.opposite) {
                 let opposite = Array.from(refe.relations)
-                  .find(rel =>
-                    refe.fields.has(rel)
-                    && (refe.fields.get(rel).relation instanceof HasOne || refe.fields.get(rel).relation instanceof HasMany)
-                  );
-                if (!opposite) {
+                  .find(rel => rel === r.opposite);
+                let rel = refe.fields.get(opposite).relation;
+                let wellformed = opposite && refe.fields.has(opposite)
+                  && (rel instanceof HasOne || rel instanceof HasMany);
+
+                if (rel.opposite !== field.name) {
+                  rel.opposite = field.name;
+                }
+
+                if (!wellformed) {
                   missingRef = true;
                 }
               }
@@ -306,9 +338,9 @@ export class Entity extends ModelBase {
             {
               plural: props.plural,
               fields: [...props.fields.values()].map(f => f.toObject()),
-            }
-          )
-        )
+            },
+          ),
+        ),
       );
     } else {
       let modelRelations = modelPackage.relations.get(this.name);
@@ -333,9 +365,9 @@ export class Entity extends ModelBase {
                   }
                   return result;
                 }).filter(f => f),
-              }
-            )
-          )
+              },
+            ),
+          ),
         );
       }
     }
@@ -351,9 +383,9 @@ export class Entity extends ModelBase {
           {
             plural: props.plural_,
             fields: [...props.fields.values()].map(f => f.toJSON()),
-          }
-        )
-      )
+          },
+        ),
+      ),
       );
     } else {
       let modelRelations = modelPackage.relations.get(this.name);
@@ -378,9 +410,9 @@ export class Entity extends ModelBase {
                   }
                   return result;
                 }).filter(f => f),
-              }
-            )
-          )
+              },
+            ),
+          ),
         );
       }
     }
