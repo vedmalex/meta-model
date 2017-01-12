@@ -198,6 +198,15 @@ export class Entity extends ModelBase {
                   missingRef = true;
                 }
               }
+              if (r.opposite) {
+                let opposite = Array.from(refe.relations)
+                  .find(rel => rel === r.opposite);
+                let wellformed = opposite && refe.fields.has(opposite)
+                  && (refe.fields.get(opposite).relation instanceof HasOne || refe.fields.get(opposite).relation instanceof HasMany);
+                if (!wellformed) {
+                  missingRef = true;
+                }
+              }
             }
           }
 
