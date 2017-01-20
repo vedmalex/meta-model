@@ -1,6 +1,6 @@
 import { Entity } from './entity';
 import { Field } from './field';
-import { ModelPackageInput, EntityInput} from './interfaces';
+import { ModelPackageInput, EntityInput } from './interfaces';
 import { MetaModel } from './metamodel';
 import { Mutation } from './mutation';
 
@@ -12,6 +12,8 @@ export class ModelPackage {
   public title?: string;
   /** description */
   public description?: string;
+  /** package is diagram */
+  public abstract: boolean = false;
   /** entity storage */
   public entities: Map<string, Entity> = new Map();
   /** Identity fields cache */
@@ -33,6 +35,7 @@ export class ModelPackage {
       this.name = name.name;
       this.title = name.title;
       this.description = name.description;
+      this.abstract = this.abstract || name.abstract;
     }
   }
 

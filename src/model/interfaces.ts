@@ -135,6 +135,7 @@ export interface ModelPackageInput extends ModelBaseInput {
   name: string;
   title?: string;
   description?: string;
+  abstract?: boolean;
   entities: string[];
   mutations: any[];
 }
