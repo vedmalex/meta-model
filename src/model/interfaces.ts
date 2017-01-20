@@ -82,8 +82,8 @@ export interface FieldArgs {
 
 export interface FieldBaseInput extends ModelBaseInput {
   args?: [FieldArgs];
-  derived: boolean;
-  persistent: boolean;
+  derived?: boolean;
+  persistent?: boolean;
   entity?: string;
 }
 
@@ -175,6 +175,8 @@ export interface RelationFields {
   type: string;
   required: boolean;
   indexed: boolean;
+  derived: boolean;
+  persistent: boolean;
   args: FieldArgs[];
 }
 

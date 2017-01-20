@@ -34,6 +34,8 @@ export class MetaModel {
       this.mutationList.set(mut.name, new Mutation(mut as MutationInput));
     });
 
+    this.ensureDefaultPackage();
+
     store.packages.forEach((pckg) => {
       let pack = new ModelPackage(pckg);
       pack.connect(this);
@@ -50,7 +52,6 @@ export class MetaModel {
       });
       pack.ensureAll();
     });
-    this.ensureDefaultPackage();
   }
 
   public saveModel(fileName: string = this.store) {

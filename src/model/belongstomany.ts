@@ -26,12 +26,13 @@ export class BelongsToMany extends RelationBase {
 
   public ensureRelationClass(modelPackage: ModelPackage) {
     if (modelPackage) {
+      let defaultPackage = modelPackage.metaModel.defaultPackage;
       if (!modelPackage.entities.has(this.using.entity)) {
         // создать
         // 1. найти одноименную связь в ref классе.
-        let refe = modelPackage.entities.get(this.ref.entity);
-        let owner = modelPackage.entities.get(this.$obj.entity);
-        let relsCandidate = Array.from(refe.relations)
+        let refe = defaultPackage.entities.get(this.ref.entity);
+        let owner = defaultPackage.entities.get(this.$obj.entity);
+        let relsCandidate = refe && Array.from(refe.relations)
           // только одноименная связь
           // было что один класс связки мог быть для связывания разных объектов... это логическая ошибка...
           // не соответствует UML и вообще представлению о ОО-дизайне.
@@ -100,8 +101,7 @@ export class BelongsToMany extends RelationBase {
         // Проверить что все необходимые поля созданы.
         // проверить типы.... ?
         let using = modelPackage.entities.get(this.using.entity);
-        // if (!using.fields.has(this.using.field)) {
-        let refe = modelPackage.entities.get(this.ref.entity);
+        let refe = defaultPackage.entities.get(this.ref.entity);
 
         let update = using.toJSON();
         // проверить поля на отсутствие повторов.
@@ -123,7 +123,6 @@ export class BelongsToMany extends RelationBase {
 
         update.fields = Array.from(fieldsMap.values());
         using.updateWith(update);
-        // }
       }
     }
   }
