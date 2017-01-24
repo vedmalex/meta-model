@@ -62,6 +62,12 @@ export class RelationBase {
     return this.name || `${this.$obj.entity}${this.$obj.verb}${inflected.camelize(ref, true)}`;
   }
 
+  get shortName() {
+    // в зависимости от типа связи pluralize + singularize
+    let ref = this.single ? inflected.singularize(this.$obj.field) : inflected.pluralize(this.$obj.field);
+    return `${inflected.camelize(ref, true)}`;
+  }
+
   public toString() {
     return JSON.stringify(this.toObject());
   }
