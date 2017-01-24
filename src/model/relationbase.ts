@@ -56,10 +56,16 @@ export class RelationBase {
     this.$obj.opposite = val;
   }
 
-  get relationName() {
+  get fullName() {
     // в зависимости от типа связи pluralize + singularize
     let ref = this.single ? inflected.singularize(this.$obj.field) : inflected.pluralize(this.$obj.field);
     return this.name || `${this.$obj.entity}${this.$obj.verb}${inflected.camelize(ref, true)}`;
+  }
+
+  get normalName() {
+    // в зависимости от типа связи pluralize + singularize
+    let ref = this.single ? inflected.singularize(this.$obj.field) : inflected.pluralize(this.$obj.field);
+    return `${this.$obj.entity}${inflected.camelize(ref, true)}`;
   }
 
   get shortName() {
