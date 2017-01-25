@@ -133,7 +133,7 @@ export class BelongsToMany extends RelationBase {
       this.$obj.verb = 'BelongsToMany';
 
       const result = Object.assign({}, this.$obj);
-      result.name = obj.name || this.relationName;
+      result.name = obj.name || this.fullName;
 
       let $belongsToMany = obj.belongsToMany;
       result.single = false;
