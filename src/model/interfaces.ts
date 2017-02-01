@@ -4,8 +4,8 @@ import { Field } from './field';
 
 export interface FieldInput extends FieldBaseInput {
   type?: string;
-  identity?: boolean;
-  indexed?: boolean;
+  identity?: boolean | string | string[];
+  indexed?:  boolean | string | string[];
   required?: boolean;
   arguments?: [FieldArgs];
   relation?: ({ hasMany: string, }
@@ -19,15 +19,15 @@ export interface FieldInput extends FieldBaseInput {
 
 export interface FieldStorage extends FieldBaseStorage {
   type: string;
-  identity: boolean;
-  indexed: boolean;
+  identity: boolean | string | string[];
+  indexed: boolean | string | string[];
   required: boolean;
   arguments?: [FieldArgs];
   type_: string;
   idKey: EntityReference;
-  identity_: boolean;
+  identity_:  boolean | string | string[];
+  indexed_:  boolean | string | string[];
   required_: boolean;
-  indexed_: boolean;
   relation: RelationBase;
 }
 

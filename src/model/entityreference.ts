@@ -78,6 +78,7 @@ export class EntityReference {
 
   public toObject() {
     return Object.assign({}, {
+      backField: this.$obj.backField,
       entity: this.$obj.entity,
       field: this.$obj.field,
     });
@@ -85,17 +86,19 @@ export class EntityReference {
 
   public toJSON() {
     return Object.assign({}, {
+      backField: this.$obj.backField_,
       entity: this.$obj.entity_,
       field: this.$obj.field_,
     });
   }
 
   public updateWith(obj: EntityReferenceInput) {
+    this.backField = obj.backField || this.backField;
     this.field = obj.field || this.field;
     this.entity = obj.entity || this.entity;
   }
 
   public toString(): string {
-    return `${this.entity}#${this.field || DEFAULT_ID_FIELDNAME}`;
+    return `${this.backField}@${this.entity}#${this.field || DEFAULT_ID_FIELDNAME}`;
   }
 };

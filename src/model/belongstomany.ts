@@ -74,7 +74,7 @@ export class BelongsToMany extends RelationBase {
 
           let fieldsMap = [{
             name: this.using.field,
-            type: 'ID',
+            type: this.using.backField ? owner.fields.get(this.using.backField).type : 'ID',
             indexed: true,
           }, {
             name: decapitalize(this.ref.entity),
