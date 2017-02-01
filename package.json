@@ -1,6 +1,6 @@
 {
   "name": "meta-model-dsl",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "description": "",
   "main": "dist/model/index.js",
   "typescript": {
