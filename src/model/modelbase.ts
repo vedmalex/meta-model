@@ -1,13 +1,13 @@
 import * as inflected from 'inflected';
 import { ModelPackage } from './modelpackage';
 import { ModelBaseStorage, ModelBaseInput } from './interfaces';
-import get from './../lib/json/get';
-import set from './../lib/json/set';
+import { Metadata } from './metadata';
 
-export class ModelBase {
+export class ModelBase extends Metadata {
   protected $obj: ModelBaseStorage;
 
   constructor(obj: ModelBaseInput) {
+    super(obj);
     if (obj) {
       this.updateWith(obj);
     }
@@ -15,30 +15,6 @@ export class ModelBase {
 
   get name(): string {
     return this.$obj.name;
-  }
-
-  public getMetadata(key?: string, def?: any): any {
-    if (!key) {
-      return this.$obj.metadata;
-    } else {
-      return get(this.$obj.metadata, key) || def;
-    }
-  }
-
-  public setMetadata(key?: string | { [key: string]: any }, data?: { [key: string]: any } | any): any {
-    if (typeof key !== 'string' && !data) {
-      data = key; key = '*';
-    }
-    if (data) {
-      if (key === '*') {
-        this.$obj.metadata = data as any;
-      } else {
-        if (!this.$obj.metadata) {
-          this.$obj.metadata = {};
-        }
-        set(this.$obj.metadata, key, data);
-      }
-    }
   }
 
   get title(): string {
@@ -56,20 +32,20 @@ export class ModelBase {
   public toObject(modelPackage?: ModelPackage) {
     let props = this.$obj;
     return {
+      ...super.toObject(),
       name: props.name,
       title: props.title,
       description: props.description,
-      metadata: props.metadata,
     };
   }
 
   public toJSON(modelPackage?: ModelPackage): ModelBaseInput {
     let props = this.$obj;
     return {
+      ...super.toJSON(),
       name: props.name_,
       title: props.title_,
       description: props.description_,
-      metadata: props.metadata,
     };
   }
 
@@ -81,7 +57,6 @@ export class ModelBase {
       let $name = obj.name;
       let $title = obj.title;
       let $description = obj.description;
-      let metadata = obj.metadata;
 
       let name = inflected.camelize($name.trim(), false);
 
@@ -106,7 +81,6 @@ export class ModelBase {
 
       result.description_ = $description;
       result.description = description;
-      result.metadata = metadata;
       this.$obj = Object.assign({}, result);
     }
   }

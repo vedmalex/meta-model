@@ -13,7 +13,10 @@ import { DEFAULT_ID_FIELD } from './definitions';
 import { ModelPackage } from './modelpackage';
 import { RelationBase } from './relationbase';
 import { FieldArgs, MetaModelStore } from './interfaces';
+import { Metadata } from './metadata';
+
 export {
+  Metadata,
   FieldArgs,
   MetaModelStore,
   Entity,

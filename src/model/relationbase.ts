@@ -1,7 +1,9 @@
 import * as inflected from 'inflected';
 import { RelationBaseStorage, RelationBaseInput, RelationFields } from './interfaces';
 import { EntityReference } from './entityreference';
-export class RelationBase {
+import { Metadata } from './metadata';
+
+export class RelationBase extends Metadata {
   /**
    * represents internal object storage
    */
@@ -11,6 +13,7 @@ export class RelationBase {
    * construct object
    */
   constructor(obj: RelationBaseInput) {
+    super(obj);
     if (obj) {
       this.updateWith(obj);
     }
@@ -81,6 +84,7 @@ export class RelationBase {
   public toObject(): RelationBaseInput {
     let props = this.$obj;
     return {
+      ...super.toObject(),
       name: props.name || props.name_,
       entity: props.entity,
       field: props.field,
@@ -92,6 +96,7 @@ export class RelationBase {
   public toJSON(): RelationBaseInput {
     let props = this.$obj;
     return {
+      ...super.toJSON(),
       name: props.name_,
       entity: props.entity,
       field: props.field,

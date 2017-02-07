@@ -119,14 +119,13 @@ export interface HasOneStorage extends RelationBaseStorage {
 }
 
 export interface ModelBaseInput {
+  metadata?: { [key: string]: any };
   name: string;
   title?: string;
   description?: string;
-  metadata?: { [key: string]: any };
 }
 
 export interface ModelBaseStorage {
-  metadata?: { [key: string]: any };
   name: string;
   title: string;
   description: string;
@@ -167,6 +166,7 @@ export interface RelationBaseInput {
    * нужно в случае когда мы будем показывать атрибут связи, и ассоциацию отедельно???
    * больше не зачем
    */
+  metadata?: { [key: string]: any };
   name?: string;
   entity: string;
   field: string;
