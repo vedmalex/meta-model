@@ -5,7 +5,7 @@ import { Field } from './field';
 export interface FieldInput extends FieldBaseInput {
   type?: string;
   identity?: boolean | string | string[];
-  indexed?:  boolean | string | string[];
+  indexed?: boolean | string | string[];
   required?: boolean;
   arguments?: [FieldArgs];
   relation?: ({ hasMany: string, }
@@ -25,8 +25,8 @@ export interface FieldStorage extends FieldBaseStorage {
   arguments?: [FieldArgs];
   type_: string;
   idKey: EntityReference;
-  identity_:  boolean | string | string[];
-  indexed_:  boolean | string | string[];
+  identity_: boolean | string | string[];
+  indexed_: boolean | string | string[];
   required_: boolean;
   relation: RelationBase;
 }
@@ -54,7 +54,9 @@ export interface BelongsToManyStorage extends RelationBaseStorage {
 
 export interface EntityInput extends ModelBaseInput {
   plural?: string;
-  fields: FieldInput[];
+  fields?: FieldInput[] | {
+    [fName: string]: FieldInput;
+  }[];
 }
 
 export interface EntityStorage extends ModelBaseStorage {
@@ -120,9 +122,11 @@ export interface ModelBaseInput {
   name: string;
   title?: string;
   description?: string;
+  metadata?: { [key: string]: any };
 }
 
 export interface ModelBaseStorage {
+  metadata?: { [key: string]: any };
   name: string;
   title: string;
   description: string;
@@ -197,13 +201,23 @@ export interface RelationBaseStorage {
 }
 
 export interface MutationInput extends ModelBaseInput {
-  args: [FieldArgs];
-  payload: [FieldArgs];
+  args: FieldArgs[];
+  payload: FieldArgs[];
 }
 
 export interface MutationStorage extends ModelBaseStorage {
-  args: [FieldArgs];
-  args_: [FieldArgs];
-  payload: [FieldArgs];
-  payload_: [FieldArgs];
+  args: FieldArgs[];
+  args_: FieldArgs[];
+  payload: FieldArgs[];
+  payload_: FieldArgs[];
+}
+
+export interface ModelHook {
+  name: string;
+  entities?: {
+    [eName: string]: EntityInput,
+  };
+  mutations?: {
+    [mName: string]: MutationInput;
+  };
 }

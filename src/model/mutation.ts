@@ -34,4 +34,40 @@ export class Mutation extends ModelBase {
     }
   }
 
+  // it get fixed object
+  public toObject() {
+    let props = this.$obj;
+    let res = super.toObject();
+    return JSON.parse(
+      JSON.stringify(
+        Object.assign(
+          {},
+          res,
+          {
+            args: props.args ? props.args : undefined,
+            payload: props.payload ? props.payload : undefined,
+          }
+        )
+      )
+    );
+  }
+
+  // it get clean object with no default values
+  public toJSON() {
+    let props = this.$obj;
+    let res = super.toJSON();
+    return JSON.parse(
+      JSON.stringify(
+        Object.assign(
+          {},
+          res,
+          {
+            args: props.args_ ? props.args_ : undefined,
+            payload: props.payload_ ? props.payload_ : undefined,
+          }
+        )
+      )
+    );
+  }
+
 }

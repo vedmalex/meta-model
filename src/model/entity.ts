@@ -6,7 +6,7 @@ import { BelongsTo } from './belongsto';
 import { BelongsToMany } from './belongstomany';
 import { DEFAULT_ID_FIELD } from './definitions';
 import { ModelPackage } from './modelpackage';
-import { EntityStorage, EntityInput } from './interfaces';
+import { EntityStorage, EntityInput, FieldInput } from './interfaces';
 import * as inflected from 'inflected';
 
 /**
@@ -295,9 +295,15 @@ export class Entity extends ModelBase {
       result.plural_ = $plural;
       result.plural = plural;
 
-      obj.fields.forEach(f => {
-
-        let field = new Field(Object.assign({}, f, { entity: result.name }));
+      let traverse = (f, index) => {
+        let field = new Field({
+          ...f,
+          metadata: {
+            order: index,
+            ...f.metadata,
+          },
+          entity: result.name,
+        });
 
         if (fields.has(field.name)) {
           throw new Error(`the same field ${field.name} is already exists in ${obj.name} entry`);
@@ -320,8 +326,17 @@ export class Entity extends ModelBase {
         if (field.indexed) {
           indexed.add(field.name);
         }
+      };
 
-      });
+      if (Array.isArray(obj.fields)) {
+        (obj.fields as FieldInput[]).forEach(traverse);
+      } else {
+        let fieldNames = Object.keys(obj.fields);
+        for (let i = 0, len = fieldNames.length; i < len; i++) {
+          let fName = fieldNames[i];
+          traverse({...obj.fields[fName], name: fName }, i);
+        }
+      }
 
       if (identity.size === 0 || !(fields.has('_id') || fields.has('id'))) {
         let f;
@@ -352,7 +367,7 @@ export class Entity extends ModelBase {
     }
   }
 
-  public toObject(modelPackage?: ModelPackage) {
+  public toObject(modelPackage ? : ModelPackage) {
     if (!modelPackage) {
       let props = this.$obj;
       let res = super.toObject();
@@ -399,7 +414,7 @@ export class Entity extends ModelBase {
     }
   }
 
-  public toJSON(modelPackage?: ModelPackage) {
+  public toJSON(modelPackage ? : ModelPackage) {
     if (!modelPackage) {
       let props = this.$obj;
       let res = super.toJSON();

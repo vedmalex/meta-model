@@ -1,7 +1,12 @@
 import { Entity } from './entity';
 import { ModelPackage } from './modelpackage';
-import { MetaModelStore, EntityInput, ModelPackageInput, MutationInput } from './interfaces';
+import {
+  MetaModelStore, EntityInput, ModelPackageInput,
+  MutationInput, FieldInput, ModelHook,
+} from './interfaces';
 import { Mutation } from './mutation';
+import deepMerge from '../lib/json/deepMerge';
+
 import * as fs from 'fs';
 
 /**
@@ -24,7 +29,131 @@ export class MetaModel {
     this.loadPackage(store);
   }
 
-  public loadPackage(store: MetaModelStore) {
+  protected applyEntityHook(entity, hook: EntityInput): Entity {
+    let result = entity.toJSON();
+    let metadata;
+    if (hook.metadata) {
+      metadata = deepMerge(result.metadata || {}, hook.metadata);
+    }
+    let fields;
+    if (hook.fields) {
+      if (Array.isArray(hook.fields)) {
+        fields = [
+          ...result.fields,
+          ...hook.fields,
+        ];
+      } else {
+        fields = result.fields;
+        let fDic = {};
+        let fNames = Object.keys(hook.fields);
+        for (let i = 0, len = result.fields.length; i < len; i++) {
+          let f = result.fields[i] as FieldInput;
+          if (hook.fields.hasOwnProperty(f.name)) {
+            fDic[f.name] = i;
+          }
+        }
+        for (let i = 0, len = fNames.length; i < len; i++) {
+          let fName = fNames[i];
+          let index = fDic[fName];
+          if (index > -1) {
+            let f = result.fields[index];
+            f = deepMerge(f, hook.fields[fName]);
+            result.fields[index] = f;
+          } else {
+            throw new Error(`undefined field ${fNames[i]} in hook`);
+          }
+        }
+      }
+    }
+
+    result = {
+      ...result,
+      fields,
+      metadata,
+    };
+
+    return new Entity(result);
+  }
+
+  protected applyMutationHook(mutation: Mutation, hook: MutationInput): Mutation {
+    let result = mutation.toJSON() as MutationInput;
+    let metadata;
+    if (hook.metadata) {
+      metadata = deepMerge(result.metadata || {}, hook.metadata);
+    }
+
+    let args = result.args, payload = result.payload;
+    if (hook.args) {
+      args = [
+        ...args,
+        ...hook.args,
+      ];
+    }
+
+    if (hook.payload) {
+      payload = [
+        ...payload,
+        ...hook.payload,
+      ];
+    }
+
+    result = {
+      ...result,
+      args,
+      payload,
+      metadata,
+    };
+    return new Mutation(result);
+  }
+
+  public applyHooks(hooks?: ModelHook[]) {
+    if (hooks && !Array.isArray(hooks)) {
+      hooks = [hooks];
+    }
+    hooks.forEach(hook => {
+      if (hook.entities) {
+        let keys = Object.keys(hook.entities);
+        for (let i = 0, len = keys.length; i < len; i++) {
+          let key = keys[i];
+          let current = hook.entities[key];
+          current.fields = current.fields ? current.fields : [];
+          current.metadata = current.metadata ? current.metadata : {};
+          if (key === '*') {
+            Array.from(this.entityList.values()).forEach(e => {
+              let result = this.applyEntityHook(e, current);
+              this.entityList.set(result.name, result);
+            });
+          } else {
+            let e = this.entityList.get(key);
+            let result = this.applyEntityHook(e, current);
+            this.entityList.set(result.name, result);
+          }
+        }
+      }
+      if (hook.mutations) {
+        let keys = Object.keys(hook.mutations);
+        for (let i = 0, len = keys.length; i < len; i++) {
+          let key = keys[i];
+          let current = hook.mutations[key];
+          current.args = current.args ? current.args : [];
+          current.payload = current.payload ? current.payload : [];
+          current.metadata = current.metadata ? current.metadata : {};
+          if (key === '*') {
+            Array.from(this.mutationList.values()).forEach(e => {
+              let result = this.applyMutationHook(e, current);
+              this.mutationList.set(result.name, result);
+            });
+          } else {
+            let e = this.mutationList.get(key);
+            let result = this.applyMutationHook(e, current);
+            this.mutationList.set(result.name, result);
+          }
+        }
+      }
+    });
+  }
+
+  public loadPackage(store: MetaModelStore, hooks?: ModelHook[]) {
     this.reset();
     store.entities.forEach((ent) => {
       this.entityList.set(ent.name, new Entity(ent));
@@ -35,6 +164,8 @@ export class MetaModel {
     });
 
     this.ensureDefaultPackage();
+
+    this.applyHooks(hooks);
 
     store.packages.forEach((pckg) => {
       let pack = new ModelPackage(pckg);

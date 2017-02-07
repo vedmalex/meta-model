@@ -31,7 +31,7 @@ export class Field extends FieldBase {
     return this.$obj.type;
   }
 
-  get identity(): boolean {
+  get identity(): boolean | string | string[] {
     return this.$obj.identity;
   }
 
@@ -45,7 +45,7 @@ export class Field extends FieldBase {
     return this.$obj.required || this.$obj.required_;
   }
 
-  get indexed(): boolean {
+  get indexed(): boolean | string | string[] {
     return this.$obj.indexed || this.$obj.indexed_;
   }
 
