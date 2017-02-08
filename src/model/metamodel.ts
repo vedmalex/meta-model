@@ -109,47 +109,49 @@ export class MetaModel extends ModelPackage {
     if (hooks && !Array.isArray(hooks)) {
       hooks = [hooks];
     }
-    hooks.forEach(hook => {
-      if (hook.entities) {
-        let keys = Object.keys(hook.entities);
-        for (let i = 0, len = keys.length; i < len; i++) {
-          let key = keys[i];
-          let current = hook.entities[key];
-          current.fields = current.fields ? current.fields : [];
-          current.metadata = current.metadata ? current.metadata : {};
-          if (key === '*') {
-            Array.from(this.entities.values()).forEach(e => {
+    if (hooks) {
+      hooks.forEach(hook => {
+        if (hook.entities) {
+          let keys = Object.keys(hook.entities);
+          for (let i = 0, len = keys.length; i < len; i++) {
+            let key = keys[i];
+            let current = hook.entities[key];
+            current.fields = current.fields ? current.fields : [];
+            current.metadata = current.metadata ? current.metadata : {};
+            if (key === '*') {
+              Array.from(this.entities.values()).forEach(e => {
+                let result = this.applyEntityHook(e, current);
+                this.entities.set(result.name, result);
+              });
+            } else {
+              let e = this.entities.get(key);
               let result = this.applyEntityHook(e, current);
               this.entities.set(result.name, result);
-            });
-          } else {
-            let e = this.entities.get(key);
-            let result = this.applyEntityHook(e, current);
-            this.entities.set(result.name, result);
+            }
           }
         }
-      }
-      if (hook.mutations) {
-        let keys = Object.keys(hook.mutations);
-        for (let i = 0, len = keys.length; i < len; i++) {
-          let key = keys[i];
-          let current = hook.mutations[key];
-          current.args = current.args ? current.args : [];
-          current.payload = current.payload ? current.payload : [];
-          current.metadata = current.metadata ? current.metadata : {};
-          if (key === '*') {
-            Array.from(this.mutations.values()).forEach(e => {
+        if (hook.mutations) {
+          let keys = Object.keys(hook.mutations);
+          for (let i = 0, len = keys.length; i < len; i++) {
+            let key = keys[i];
+            let current = hook.mutations[key];
+            current.args = current.args ? current.args : [];
+            current.payload = current.payload ? current.payload : [];
+            current.metadata = current.metadata ? current.metadata : {};
+            if (key === '*') {
+              Array.from(this.mutations.values()).forEach(e => {
+                let result = this.applyMutationHook(e, current);
+                this.mutations.set(result.name, result);
+              });
+            } else {
+              let e = this.mutations.get(key);
               let result = this.applyMutationHook(e, current);
               this.mutations.set(result.name, result);
-            });
-          } else {
-            let e = this.mutations.get(key);
-            let result = this.applyMutationHook(e, current);
-            this.mutations.set(result.name, result);
+            }
           }
         }
-      }
-    });
+      });
+    }
   }
 
   public loadPackage(store: MetaModelStore, hooks?: ModelHook[]) {
@@ -162,8 +164,6 @@ export class MetaModel extends ModelPackage {
     store.mutations.forEach(mut => {
       this.addMutation(new Mutation(mut));
     });
-
-    debugger;
 
     this.ensureDefaultPackage();
 
