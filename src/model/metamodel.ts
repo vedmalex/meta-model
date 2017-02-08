@@ -1,7 +1,7 @@
 import { Entity } from './entity';
 import { ModelPackage } from './modelpackage';
 import {
-  MetaModelStore, EntityInput, ModelPackageInput,
+  MetaModelStore, EntityInput,
   MutationInput, FieldInput, ModelHook,
 } from './interfaces';
 import { Mutation } from './mutation';
@@ -190,7 +190,7 @@ export class MetaModel extends ModelPackage {
   public saveModel(fileName: string = this.store) {
     fs.writeFileSync(fileName, JSON.stringify({
       entities: Array.from(this.entities.values()).map(f => f.toJSON()),
-      packages: Array.from(this.packages.values()).map(f => f.toJSON()),
+      packages: Array.from(this.packages.values())/*.filter(p => p.name !== 'default')*/.map(f => f.toJSON()),
       mutations: Array.from(this.mutations.values()).map(f => f.toJSON()),
     }));
   }

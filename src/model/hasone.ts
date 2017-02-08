@@ -16,12 +16,12 @@ export class HasOne extends RelationBase {
   public updateWith(obj: HasOneInput) {
     if (obj) {
       super.updateWith(obj);
-      this.$obj.verb = 'HasOne';
-
       const result = Object.assign({}, this.$obj);
-      result.single = true;
-      result.stored = false;
-      result.embedded = false;
+
+      this.setMetadata('single', true);
+      this.setMetadata('stored', false);
+      this.setMetadata('embedded', false);
+      this.setMetadata('verb', 'HasOne');
 
       let $hasOne = obj.hasOne;
       let hasOne = new EntityReference($hasOne);
@@ -30,6 +30,7 @@ export class HasOne extends RelationBase {
       result.hasOne = hasOne;
 
       this.$obj = Object.assign({}, result);
+      this.initNames();
     }
   }
 

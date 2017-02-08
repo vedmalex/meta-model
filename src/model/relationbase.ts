@@ -23,7 +23,7 @@ export class RelationBase extends Metadata {
     return this.$obj.name;
   }
 
-  get fields(): RelationFields[] {
+  get fields(): RelationFields[] | undefined {
     return this.$obj.fields;
   }
 
@@ -32,22 +32,22 @@ export class RelationBase extends Metadata {
   }
 
   get verb() {
-    return this.$obj.verb;
+    return this.getMetadata('verb');
   }
 
   // one item per relation
   get single() {
-    return this.$obj.single;
+    return this.getMetadata('single');
   }
 
   // key is storage is located in owner side of entity
   get stored() {
-    return this.$obj.stored;
+    return this.getMetadata('stored');
   }
 
   // stored as members of class
   get emdebbed() {
-    return this.$obj.embedded;
+    return this.getMetadata('embedded');
   }
 
   // opposite entity field with relation def
@@ -59,22 +59,42 @@ export class RelationBase extends Metadata {
     this.$obj.opposite = val;
   }
 
-  get fullName() {
-    // в зависимости от типа связи pluralize + singularize
+  protected initNames() {
     let ref = this.single ? inflected.singularize(this.$obj.field) : inflected.pluralize(this.$obj.field);
-    return this.name || `${this.$obj.entity}${this.$obj.verb}${inflected.camelize(ref, true)}`;
+    this.getMetadata('name.full', this.name || `${this.$obj.entity}${this.verb}${inflected.camelize(ref, true)}`);
+
+    let ref1 = this.single ? inflected.singularize(this.$obj.field) : inflected.pluralize(this.$obj.field);
+    this.setMetadata('name.normal', `${this.$obj.entity}${inflected.camelize(ref1, true)}`);
+
+    let ref2 = this.single ? inflected.singularize(this.$obj.field) : inflected.pluralize(this.$obj.field);
+    this.getMetadata('name.short', `${inflected.camelize(ref2, true)}`);
+  }
+
+  get fullName() {
+    let result = this.getMetadata('name.full');
+    if (!result) {
+      this.initNames();
+      result = this.getMetadata('name.full');
+    }
+    return result;
   }
 
   get normalName() {
-    // в зависимости от типа связи pluralize + singularize
-    let ref = this.single ? inflected.singularize(this.$obj.field) : inflected.pluralize(this.$obj.field);
-    return `${this.$obj.entity}${inflected.camelize(ref, true)}`;
+    let result = this.getMetadata('name.normal');
+    if (!result) {
+      this.initNames();
+      result = this.getMetadata('name.normal');
+    }
+    return result;
   }
 
   get shortName() {
-    // в зависимости от типа связи pluralize + singularize
-    let ref = this.single ? inflected.singularize(this.$obj.field) : inflected.pluralize(this.$obj.field);
-    return `${inflected.camelize(ref, true)}`;
+    let result = this.getMetadata('name.short');
+    if (!result) {
+      this.initNames();
+      result = this.getMetadata('name.short');
+    }
+    return result;
   }
 
   public toString() {
@@ -109,7 +129,6 @@ export class RelationBase extends Metadata {
     if (obj) {
 
       const result: RelationBaseStorage = Object.assign({}, this.$obj);
-      result.verb = 'NotDefinetlyRelated';
 
       let $name = obj.name;
       let opposite = obj.opposite;
@@ -121,7 +140,7 @@ export class RelationBase extends Metadata {
 
       result.opposite = opposite;
 
-      result.fields = obj.fields || [];
+      result.fields = obj.fields;
 
       let $entity = obj.entity;
       let entity = $entity;

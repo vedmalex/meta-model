@@ -14,12 +14,12 @@ export class FieldBase extends ModelBase {
 
   // is used with custom resolver
   get derived() {
-    return this.$obj.derived_;
+    return this.getMetadata('derived');
   }
 
   // is retrieved from storage layer
   get persistent() {
-    return this.$obj.persistent_;
+    return this.getMetadata('persistent');
   }
 
   public updateWith(obj: FieldBaseInput) {
@@ -34,19 +34,9 @@ export class FieldBase extends ModelBase {
       let args = obj.args;
       let $args = obj.args;
 
-      let derived = obj.derived;
-      let presistent = obj.persistent;
-
       // wheather it is explicitly defined or has arguments
-      let $derived = obj.derived || (Array.isArray(obj.args) && obj.args.length > 0);
-      // wheather it is explicitly defined or if derived then by default is transient
-      let $presistent = obj.persistent || !$derived;
-
-      result.persistent = presistent;
-      result.derived = derived;
-
-      result.persistent_ = $presistent;
-      result.derived_ = $derived;
+      this.setMetadata('derived', obj.derived || (Array.isArray(obj.args) && obj.args.length > 0));
+      this.setMetadata('persistent', obj.persistent || !(obj.derived || (Array.isArray(obj.args) && obj.args.length > 0)));
 
       result.entity = entity;
       result.entity_ = $entity;
@@ -70,8 +60,6 @@ export class FieldBase extends ModelBase {
           {
             entity: props.entity || props.entity_,
             args: props.args || props.args_,
-            derived: props.derived || props.derived_,
-            persistent: props.persistent || props.persistent_,
           }
         )
       )
@@ -89,8 +77,6 @@ export class FieldBase extends ModelBase {
           res,
           {
             args: props.args_,
-            derived: props.derived_,
-            persistent: props.persistent_,
           }
         )
       )

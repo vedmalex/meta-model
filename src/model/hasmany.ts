@@ -17,12 +17,13 @@ export class HasMany extends RelationBase {
   public updateWith(obj: HasManyInput) {
     if (obj) {
       super.updateWith(obj);
-      this.$obj.verb = 'HasMany';
 
       const result = Object.assign({}, this.$obj);
-      result.single = false;
-      result.stored = false;
-      result.embedded = false;
+
+      this.setMetadata('single', false);
+      this.setMetadata('stored', false);
+      this.setMetadata('embedded', false);
+      this.setMetadata('verb', 'HasMany');
 
       let $hasMany = obj.hasMany;
 
@@ -35,6 +36,7 @@ export class HasMany extends RelationBase {
       result.hasMany = hasMany;
 
       this.$obj = Object.assign({}, result);
+      this.initNames();
     }
   }
   // it get fixed object

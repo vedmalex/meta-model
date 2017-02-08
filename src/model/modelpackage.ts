@@ -107,7 +107,7 @@ export class ModelPackage {
       title: this.title,
       description: this.description,
       entities: Array.from(this.entities.values()).map(f => f.name),
-      mutations: Array.from(this.mutations.values()).map(f => f.toJSON()),
+      mutations: Array.from(this.mutations.values()).map(f => f.name),
     };
   }
 

@@ -25,12 +25,13 @@ export class BelongsTo extends RelationBase {
   public updateWith(obj: BelongsToInput) {
     if (obj) {
       super.updateWith(obj);
-      this.$obj.verb = 'BelongsTo';
 
       const result = Object.assign({}, this.$obj);
-      result.single = true;
-      result.stored = true;
-      result.embedded = false;
+
+      this.setMetadata('single', true);
+      this.setMetadata('stored', true);
+      this.setMetadata('embedded', true);
+      this.setMetadata('verb', 'BelongsTo');
 
       let $belongsTo = obj.belongsTo;
 
@@ -43,6 +44,7 @@ export class BelongsTo extends RelationBase {
       result.belongsTo = belongsTo;
 
       this.$obj = Object.assign({}, result);
+      this.initNames();
     }
   }
 

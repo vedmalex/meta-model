@@ -246,7 +246,7 @@ export class Entity extends ModelBase {
   }
 
   get plural(): string {
-    return this.$obj.plural;
+    return this.getMetadata('name.plural');
   }
 
   get relations(): Set<string> {
@@ -275,14 +275,18 @@ export class Entity extends ModelBase {
 
       const result = Object.assign({}, this.$obj);
       result.name = inflected.classify(result.name);
+
       if (result.name !== obj.name) {
         console.warn(`Please use singular form of Noun to name entity ${result.name}!=${obj.name}`);
       }
+
       let $plural = obj.plural;
       if (!$plural) {
         $plural = inflected.pluralize(result.name);
       }
-      let plural = inflected.camelize($plural.trim());
+
+      this.setMetadata('name.singular', result.name);
+      this.setMetadata('name.plural', $plural);
 
       result.name = (result.name.slice(0, 1)).toUpperCase() + result.name.slice(1);
 
@@ -291,9 +295,6 @@ export class Entity extends ModelBase {
       const identity = new Set();
       const required = new Set();
       const indexed = new Set();
-
-      result.plural_ = $plural;
-      result.plural = plural;
 
       let traverse = (f, index) => {
         let field = new Field({
@@ -377,7 +378,6 @@ export class Entity extends ModelBase {
             {},
             res,
             {
-              plural: props.plural,
               fields: [...props.fields.values()].map(f => f.toObject()),
             },
           ),
@@ -394,7 +394,6 @@ export class Entity extends ModelBase {
               {},
               res,
               {
-                plural: props.plural,
                 fields: [...props.fields.values()].map(f => {
                   let result;
                   if (this.relations.has(f.name)) {
@@ -422,7 +421,6 @@ export class Entity extends ModelBase {
         Object.assign({},
           res,
           {
-            plural: props.plural_,
             fields: [...props.fields.values()].map(f => f.toJSON()),
           },
         ),
@@ -439,7 +437,6 @@ export class Entity extends ModelBase {
               {},
               res,
               {
-                plural: props.plural_,
                 fields: [...props.fields.values()].map(f => {
                   let result;
                   if (this.relations.has(f.name)) {

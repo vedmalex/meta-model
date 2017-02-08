@@ -13,7 +13,11 @@ export class Metadata {
     if (!key) {
       return this.metadata;
     } else {
-      return get(this.metadata, key) || def;
+      let result = get(this.metadata, key);
+      if (!result && def) {
+        this.setMetadata(key, def);
+      }
+      return result || def;
     }
   }
 
@@ -21,7 +25,7 @@ export class Metadata {
     if (typeof key !== 'string' && !data) {
       data = key; key = '*';
     }
-    if (data) {
+    if (data !== undefined) {
       if (key === '*') {
         this.metadata = data as any;
       } else {

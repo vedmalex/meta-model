@@ -81,7 +81,7 @@ export class BelongsToMany extends RelationBase {
             type: refe.fields.get(this.ref.field).type,
             indexed: true,
           },
-          ...this.fields,
+          ...(this.fields || []),
           ].reduce((hash, curr) => {
             if (hash.has(curr.name)) {
               curr = Object.assign({}, hash.get(curr.name), curr);
@@ -130,15 +130,14 @@ export class BelongsToMany extends RelationBase {
   public updateWith(obj: BelongsToManyInput) {
     if (obj) {
       super.updateWith(obj);
-      this.$obj.verb = 'BelongsToMany';
-
       const result = Object.assign({}, this.$obj);
       result.name = obj.name || this.fullName;
 
       let $belongsToMany = obj.belongsToMany;
-      result.single = false;
-      result.stored = false;
-      result.embedded = false;
+      this.setMetadata('single', false);
+      this.setMetadata('stored', false);
+      this.setMetadata('embedded', false);
+      this.setMetadata('verb', 'BelongsToMany');
 
       let $using = obj.using;
 
@@ -168,6 +167,7 @@ export class BelongsToMany extends RelationBase {
       result.using = using;
 
       this.$obj = Object.assign({}, result);
+      this.initNames();
     }
   }
   // it get fixed object

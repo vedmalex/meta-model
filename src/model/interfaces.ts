@@ -60,13 +60,10 @@ export interface EntityInput extends ModelBaseInput {
 }
 
 export interface EntityJSON extends ModelBaseInput {
-  plural?: string;
   fields?: FieldInput[];
 }
 
 export interface EntityStorage extends ModelBaseStorage {
-  plural?: string;
-  plural_?: string;
   fields: Map<string, Field>;
   relations: Set<string>;
   identity: Set<string>;
@@ -97,10 +94,6 @@ export interface FieldBaseInput extends ModelBaseInput {
 export interface FieldBaseStorage extends ModelBaseStorage {
   args?: [FieldArgs];
   args_?: [FieldArgs];
-  derived: boolean;
-  persistent: boolean;
-  derived_: boolean;
-  persistent_: boolean;
   entity: string;
   entity_: string;
 }
@@ -199,10 +192,6 @@ export interface RelationBaseStorage {
   field_: string;
   fields: RelationFields[];
   opposite: string;
-  verb: string;
-  single: boolean;
-  stored: boolean;
-  embedded: boolean;
 }
 
 export interface MutationInput extends ModelBaseInput {
