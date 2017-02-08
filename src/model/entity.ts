@@ -6,7 +6,7 @@ import { BelongsTo } from './belongsto';
 import { BelongsToMany } from './belongstomany';
 import { DEFAULT_ID_FIELD } from './definitions';
 import { ModelPackage } from './modelpackage';
-import { EntityStorage, EntityInput, FieldInput } from './interfaces';
+import { EntityStorage, EntityInput, FieldInput, EntityJSON } from './interfaces';
 import * as inflected from 'inflected';
 
 /**
@@ -334,7 +334,7 @@ export class Entity extends ModelBase {
         let fieldNames = Object.keys(obj.fields);
         for (let i = 0, len = fieldNames.length; i < len; i++) {
           let fName = fieldNames[i];
-          traverse({...obj.fields[fName], name: fName }, i);
+          traverse({ ...obj.fields[fName], name: fName }, i);
         }
       }
 
@@ -367,7 +367,7 @@ export class Entity extends ModelBase {
     }
   }
 
-  public toObject(modelPackage ? : ModelPackage) {
+  public toObject(modelPackage?: ModelPackage) {
     if (!modelPackage) {
       let props = this.$obj;
       let res = super.toObject();
@@ -414,7 +414,7 @@ export class Entity extends ModelBase {
     }
   }
 
-  public toJSON(modelPackage ? : ModelPackage) {
+  public toJSON(modelPackage?: ModelPackage): EntityJSON {
     if (!modelPackage) {
       let props = this.$obj;
       let res = super.toJSON();

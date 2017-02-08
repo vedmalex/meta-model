@@ -56,7 +56,12 @@ export interface EntityInput extends ModelBaseInput {
   plural?: string;
   fields?: FieldInput[] | {
     [fName: string]: FieldInput;
-  }[];
+  };
+}
+
+export interface EntityJSON extends ModelBaseInput {
+  plural?: string;
+  fields?: FieldInput[];
 }
 
 export interface EntityStorage extends ModelBaseStorage {
@@ -152,9 +157,9 @@ export interface ModelPackageStore {
 }
 
 export interface MetaModelStore {
-  entities: EntityStorage[];
+  entities: EntityInput[];
   packages: ModelPackageStore[];
-  mutations: MutationStorage[];
+  mutations: MutationInput[];
   name: string;
   title?: string;
   description?: string;

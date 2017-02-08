@@ -12,14 +12,13 @@ import * as fs from 'fs';
 /**
  * Represents meta-model store
  */
-export class MetaModel {
-  public entityList: Map<string, Entity> = new Map();
-  public mutationList: Map<string, Mutation> = new Map();
-  public packagesList: Map<string, ModelPackage> = new Map();
+export class MetaModel extends ModelPackage {
+  public packages: Map<string, ModelPackage> = new Map();
   public store: string = 'default.json';
   public defaultPackage: ModelPackage;
 
   constructor() {
+    super('default');
     this.ensureDefaultPackage();
   }
 
@@ -29,18 +28,18 @@ export class MetaModel {
     this.loadPackage(store);
   }
 
-  protected applyEntityHook(entity, hook: EntityInput): Entity {
+  protected applyEntityHook(entity: Entity, hook: EntityInput): Entity {
     let result = entity.toJSON();
     let metadata;
     if (hook.metadata) {
       metadata = deepMerge(result.metadata || {}, hook.metadata);
     }
-    let fields;
+    let fields: FieldInput[];
     if (hook.fields) {
       if (Array.isArray(hook.fields)) {
         fields = [
-          ...result.fields,
-          ...hook.fields,
+          ...result.fields as FieldInput[],
+          ...hook.fields as FieldInput[],
         ];
       } else {
         fields = result.fields;
@@ -119,14 +118,14 @@ export class MetaModel {
           current.fields = current.fields ? current.fields : [];
           current.metadata = current.metadata ? current.metadata : {};
           if (key === '*') {
-            Array.from(this.entityList.values()).forEach(e => {
+            Array.from(this.entities.values()).forEach(e => {
               let result = this.applyEntityHook(e, current);
-              this.entityList.set(result.name, result);
+              this.entities.set(result.name, result);
             });
           } else {
-            let e = this.entityList.get(key);
+            let e = this.entities.get(key);
             let result = this.applyEntityHook(e, current);
-            this.entityList.set(result.name, result);
+            this.entities.set(result.name, result);
           }
         }
       }
@@ -139,14 +138,14 @@ export class MetaModel {
           current.payload = current.payload ? current.payload : [];
           current.metadata = current.metadata ? current.metadata : {};
           if (key === '*') {
-            Array.from(this.mutationList.values()).forEach(e => {
+            Array.from(this.mutations.values()).forEach(e => {
               let result = this.applyMutationHook(e, current);
-              this.mutationList.set(result.name, result);
+              this.mutations.set(result.name, result);
             });
           } else {
-            let e = this.mutationList.get(key);
+            let e = this.mutations.get(key);
             let result = this.applyMutationHook(e, current);
-            this.mutationList.set(result.name, result);
+            this.mutations.set(result.name, result);
           }
         }
       }
@@ -155,13 +154,16 @@ export class MetaModel {
 
   public loadPackage(store: MetaModelStore, hooks?: ModelHook[]) {
     this.reset();
+
     store.entities.forEach((ent) => {
-      this.entityList.set(ent.name, new Entity(ent));
+      this.addEntity(new Entity(ent));
     });
 
     store.mutations.forEach(mut => {
-      this.mutationList.set(mut.name, new Mutation(mut as MutationInput));
+      this.addMutation(new Mutation(mut));
     });
+
+    debugger;
 
     this.ensureDefaultPackage();
 
@@ -170,15 +172,15 @@ export class MetaModel {
     store.packages.forEach((pckg) => {
       let pack = new ModelPackage(pckg);
       pack.connect(this);
-      this.packagesList.set(pckg.name, pack);
+      this.packages.set(pckg.name, pack);
       pckg.entities.forEach(e => {
-        if (this.entityList.has(e)) {
-          pack.addEntity(this.entityList.get(e));
+        if (this.entities.has(e)) {
+          pack.addEntity(this.entities.get(e));
         }
       });
       pckg.mutations.forEach(m => {
-        if (this.mutationList.has(m)) {
-          pack.addMutation(this.mutationList.get(m));
+        if (this.mutations.has(m)) {
+          pack.addMutation(this.mutations.get(m));
         }
       });
       pack.ensureAll();
@@ -187,55 +189,55 @@ export class MetaModel {
 
   public saveModel(fileName: string = this.store) {
     fs.writeFileSync(fileName, JSON.stringify({
-      entities: Array.from(this.entityList.values()).map(f => f.toJSON()),
-      packages: Array.from(this.packagesList.values()).map(f => f.toJSON()),
-      mutations: Array.from(this.mutationList.values()).map(f => f.toJSON()),
+      entities: Array.from(this.entities.values()).map(f => f.toJSON()),
+      packages: Array.from(this.packages.values()).map(f => f.toJSON()),
+      mutations: Array.from(this.mutations.values()).map(f => f.toJSON()),
     }));
   }
 
   public reset() {
-    this.entityList.clear();
-    this.packagesList.clear();
-    this.mutationList.clear();
+    this.entities.clear();
+    this.packages.clear();
+    this.mutations.clear();
   }
 
-  public createEntity(input: EntityInput): Entity {
-    let entity = new Entity(input);
-    if (this.entityList.has(entity.name)) {
-      throw new Error(`Entity "${entity.name}" is already Exists`);
-    }
-    this.entityList.set(entity.name, entity);
-    this.defaultPackage.addEntity(entity);
-    this.defaultPackage.ensureAll();
-    return entity;
-  }
+  // public createEntity(input: EntityInput): Entity {
+  //   let entity = new Entity(input);
+  //   if (this.entities.has(entity.name)) {
+  //     throw new Error(`Entity "${entity.name}" is already Exists`);
+  //   }
+  //   this.entities.set(entity.name, entity);
+  //   this.defaultPackage.addEntity(entity);
+  //   this.defaultPackage.ensureAll();
+  //   return entity;
+  // }
 
-  public createMutation(input: MutationInput): Mutation {
-    let mutation = new Mutation(input);
-    if (this.mutationList.has(mutation.name)) {
-      throw new Error(`Mutation "${mutation.name}" is already Exists`);
-    }
-    this.mutationList.set(mutation.name, mutation);
-    this.defaultPackage.addMutation(mutation);
-    return mutation;
-  }
+  // public createMutation(input: MutationInput): Mutation {
+  //   let mutation = new Mutation(input);
+  //   if (this.mutations.has(mutation.name)) {
+  //     throw new Error(`Mutation "${mutation.name}" is already Exists`);
+  //   }
+  //   this.mutations.set(mutation.name, mutation);
+  //   this.defaultPackage.addMutation(mutation);
+  //   return mutation;
+  // }
 
   public createPackage(name: string): ModelPackage {
-    if (this.packagesList.has(name)) {
+    if (this.packages.has(name)) {
       throw new Error(`Package "${name}" already exists`);
     }
     let pack = new ModelPackage(name);
-    this.packagesList.set(name, pack);
+    this.packages.set(name, pack);
     pack.connect(this);
     return pack;
   }
 
   public assignEntityToPackage(input: { entity: string, package: string }) {
-    let pack = this.packagesList.get(input.package);
+    let pack = this.packages.get(input.package);
     if (!pack) {
       throw new Error(`Package ${input.package} didn't exists`);
     };
-    let ent = this.entityList.get(input.entity);
+    let ent = this.entities.get(input.entity);
     if (!ent) {
       throw new Error(`Package ${input.entity} didn't exists`);
     }
@@ -248,18 +250,11 @@ export class MetaModel {
   }
 
   private ensureDefaultPackage() {
-    if (!this.packagesList.has('default')) {
-      let defPackage = new ModelPackage({ name: 'default' } as ModelPackageInput);
-      defPackage.connect(this);
-      this.defaultPackage = defPackage;
-      this.entityList.forEach(e => {
-        this.defaultPackage.addEntity(e);
-      });
-      this.mutationList.forEach(m => {
-        this.defaultPackage.addMutation(m);
-      });
-      defPackage.ensureAll();
-      this.packagesList.set('default', defPackage);
+    if (!this.packages.has('default')) {
+      this.defaultPackage = this;
+      this.connect(this);
+      this.ensureAll();
+      this.packages.set('default', this);
     }
   }
 }

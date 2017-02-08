@@ -1,6 +1,7 @@
 import { Entity } from './entity';
 import { Field } from './field';
-import { ModelPackageInput, EntityInput } from './interfaces';
+// tslint:disable-next-line:no-unused-variable
+import { ModelPackageInput, EntityInput, EntityJSON } from './interfaces';
 import { MetaModel } from './metamodel';
 import { Mutation } from './mutation';
 
@@ -116,18 +117,18 @@ export class ModelPackage {
       title: this.title,
       description: this.description,
       entities: Array.from(this.entities.values()).map(f => f.toObject(this)),
-      mutations: Array.from(this.mutations.values()).map(f => f.toObject(this)),
+      mutations: Array.from(this.mutations.values()).map(f => f.toObject()),
     };
   }
 
   private ensureEntity(entity) {
-    if (!this.metaModel.entityList.has(entity.name)) {
-      this.metaModel.entityList.set(entity.name, entity);
+    if (!this.metaModel.entities.has(entity.name)) {
+      this.metaModel.entities.set(entity.name, entity);
     }
   }
   private ensureMutation(entity) {
-    if (!this.metaModel.mutationList.has(entity.name)) {
-      this.metaModel.mutationList.set(entity.name, entity);
+    if (!this.metaModel.mutations.has(entity.name)) {
+      this.metaModel.mutations.set(entity.name, entity);
     }
   }
 }

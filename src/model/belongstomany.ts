@@ -112,12 +112,12 @@ export class BelongsToMany extends RelationBase {
             indexed: true,
           },
           ...this.fields,
-          ...update.fields,
+          ...update.fields as FieldInput[],
         ].reduce((hash, curr) => {
           if (hash.has(curr.name)) {
             curr = Object.assign({}, hash.get(curr.name), curr);
           }
-          hash.set(curr.name, curr);
+          hash.set(curr.name, curr as FieldInput);
           return hash;
         }, new Map<string, FieldInput>());
 
