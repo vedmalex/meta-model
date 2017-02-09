@@ -96,13 +96,13 @@ export class Field extends FieldBase {
       result.type_ = $type;
       result.type = type;
 
-      if (obj.identity) {
+      if (this.getMetadata('storage.identity', false)) {
         // это то как выглядит ключ для внешних ссылок
         result.idKey = new EntityReference(result.entity, result.name);
       }
 
       // identity can't have relation definition
-      if (obj.relation && !obj.identity) {
+      if (obj.relation && !this.getMetadata('storage.identity', false)) {
         let $relation = obj.relation;
         let relation: RelationBase;
 
