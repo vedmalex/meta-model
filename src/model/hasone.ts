@@ -18,9 +18,9 @@ export class HasOne extends RelationBase {
       super.updateWith(obj);
       const result = Object.assign({}, this.$obj);
 
-      this.setMetadata('single', true);
-      this.setMetadata('stored', false);
-      this.setMetadata('embedded', false);
+      this.setMetadata('storage.single', true);
+      this.setMetadata('storage.stored', false);
+      this.setMetadata('storage.embedded', false);
       this.setMetadata('verb', 'HasOne');
 
       let $hasOne = obj.hasOne;

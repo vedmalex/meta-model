@@ -1,7 +1,8 @@
 import * as inflected from 'inflected';
-import { RelationBaseStorage, RelationBaseInput, RelationFields } from './interfaces';
+import { RelationBaseStorage, RelationBaseInput, RelationFields, RelationBaseJSON } from './interfaces';
 import { EntityReference } from './entityreference';
 import { Metadata } from './metadata';
+import fold from './../lib/json/fold';
 
 export class RelationBase extends Metadata {
   /**
@@ -15,7 +16,7 @@ export class RelationBase extends Metadata {
   constructor(obj: RelationBaseInput) {
     super(obj);
     if (obj) {
-      this.updateWith(obj);
+      this.updateWith(fold(obj) as RelationBaseInput);
     }
   }
 
@@ -37,17 +38,17 @@ export class RelationBase extends Metadata {
 
   // one item per relation
   get single() {
-    return this.getMetadata('single');
+    return this.getMetadata('storage.single');
   }
 
   // key is storage is located in owner side of entity
   get stored() {
-    return this.getMetadata('stored');
+    return this.getMetadata('storage.stored');
   }
 
   // stored as members of class
   get emdebbed() {
-    return this.getMetadata('embedded');
+    return this.getMetadata('storage.embedded');
   }
 
   // opposite entity field with relation def
@@ -113,13 +114,11 @@ export class RelationBase extends Metadata {
     };
   }
 
-  public toJSON(): RelationBaseInput {
+  public toJSON(): RelationBaseJSON {
     let props = this.$obj;
     return {
       ...super.toJSON(),
       name: props.name_,
-      entity: props.entity,
-      field: props.field,
       fields: props.fields,
       opposite: props.opposite,
     };
@@ -158,7 +157,7 @@ export class RelationBase extends Metadata {
     }
   }
 
-  public clone(): RelationBase {
-    return new (<typeof RelationBase>this.constructor)(this.toJSON());
-  }
+  // public clone(): RelationBase {
+  //   return new (<typeof RelationBase>this.constructor)(this.toJSON());
+  // }
 }

@@ -8,6 +8,7 @@ import { DEFAULT_ID_FIELD } from './definitions';
 import { ModelPackage } from './modelpackage';
 import { EntityStorage, EntityInput, FieldInput, EntityJSON } from './interfaces';
 import * as inflected from 'inflected';
+import  deepMerge  from './../lib/json/deepMerge';
 
 /**
  * 1. тип объекта который входит на updateWith
@@ -269,6 +270,41 @@ export class Entity extends ModelBase {
     return this.$obj.indexed;
   }
 
+  protected updateIndex(f: Field) {
+    let indexes = this.getMetadata('storage.indexes', {});
+    if (f.indexed) {
+      let indexName: string | string[];
+      if (typeof f.indexed === 'boolean') {
+        indexName = f.name;
+      } else if (Array.isArray(f.indexed)) {
+        indexName = f.indexed;
+      } else if (typeof f.indexed === 'string') {
+        indexName = f.indexed.split(' ');
+      }
+      let entry = {
+        fields: {
+          [f.name]: 1,
+        },
+        options: {
+          sparse: true,
+          unique: !!f.identity,
+        },
+      };
+      if (typeof indexName === 'string') {
+        indexes[indexName] = entry;
+      } else {
+        for (let i = 0, len = indexName.length; i < len; i++) {
+          let index = indexName[i];
+          if (indexes.hasOwnProperty(index)) {
+            indexes[index] = deepMerge(indexes[index], entry);
+          } else {
+            indexes[index] = entry;
+          }
+        }
+      }
+    }
+  }
+
   public updateWith(obj: EntityInput) {
     if (obj) {
       super.updateWith(obj);
@@ -326,6 +362,7 @@ export class Entity extends ModelBase {
 
         if (field.indexed) {
           indexed.add(field.name);
+          this.updateIndex(field);
         }
       };
 
@@ -421,7 +458,7 @@ export class Entity extends ModelBase {
         Object.assign({},
           res,
           {
-            fields: [...props.fields.values()].map(f => f.toJSON()),
+            fields: [...props.fields.values()],
           },
         ),
       ),

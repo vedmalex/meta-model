@@ -28,9 +28,9 @@ export class BelongsTo extends RelationBase {
 
       const result = Object.assign({}, this.$obj);
 
-      this.setMetadata('single', true);
-      this.setMetadata('stored', true);
-      this.setMetadata('embedded', true);
+      this.setMetadata('storage.single', true);
+      this.setMetadata('storage.stored', true);
+      this.setMetadata('storage.embedded', true);
       this.setMetadata('verb', 'BelongsTo');
 
       let $belongsTo = obj.belongsTo;

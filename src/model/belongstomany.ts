@@ -131,12 +131,11 @@ export class BelongsToMany extends RelationBase {
     if (obj) {
       super.updateWith(obj);
       const result = Object.assign({}, this.$obj);
-      result.name = obj.name || this.fullName;
 
       let $belongsToMany = obj.belongsToMany;
-      this.setMetadata('single', false);
-      this.setMetadata('stored', false);
-      this.setMetadata('embedded', false);
+      this.setMetadata('storage.single', false);
+      this.setMetadata('storage.stored', false);
+      this.setMetadata('storage.embedded', false);
       this.setMetadata('verb', 'BelongsToMany');
 
       let $using = obj.using;
@@ -182,9 +181,9 @@ export class BelongsToMany extends RelationBase {
           {
             belongsToMany: props.belongsToMany ? props.belongsToMany.toString() : undefined,
             using: props.using ? props.using.toString() : undefined,
-          }
-        )
-      )
+          },
+        ),
+      ),
     );
   }
 
@@ -200,9 +199,9 @@ export class BelongsToMany extends RelationBase {
           {
             belongsToMany: props.belongsToMany_,
             using: props.using_,
-          }
-        )
-      )
+          },
+        ),
+      ),
     );
   }
 }

@@ -1,3 +1,6 @@
+import get from './get';
+import set from './set';
+
 export default function deepMerge(...args: Object[]) {
   if (args.length > 0) {
     // дописать merge с массивами
@@ -11,11 +14,11 @@ export default function deepMerge(...args: Object[]) {
           for (let j = 0, kLen = keys.length; j < kLen; j++) {
             let key = keys[j];
             if (current.hasOwnProperty(key)) {
-              let cv = current[key];
+              let cv = get(current, key);
               if (result.hasOwnProperty(key) && typeof cv === 'object' && cv !== null) {
-                result[key] = deepMerge(result[key], cv);
+                set(result, key, deepMerge(get(result, key), cv));
               } else {
-                result[key] = cv;
+                set(result, key, cv);
               }
             }
           }

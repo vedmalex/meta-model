@@ -20,9 +20,9 @@ export class HasMany extends RelationBase {
 
       const result = Object.assign({}, this.$obj);
 
-      this.setMetadata('single', false);
-      this.setMetadata('stored', false);
-      this.setMetadata('embedded', false);
+      this.setMetadata('storage.single', false);
+      this.setMetadata('storage.stored', false);
+      this.setMetadata('storage.embedded', false);
       this.setMetadata('verb', 'HasMany');
 
       let $hasMany = obj.hasMany;

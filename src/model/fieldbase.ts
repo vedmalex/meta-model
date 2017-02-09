@@ -14,12 +14,12 @@ export class FieldBase extends ModelBase {
 
   // is used with custom resolver
   get derived() {
-    return this.getMetadata('derived');
+    return this.getMetadata('storage.derived');
   }
 
   // is retrieved from storage layer
   get persistent() {
-    return this.getMetadata('persistent');
+    return this.getMetadata('storage.persistent');
   }
 
   public updateWith(obj: FieldBaseInput) {
@@ -35,8 +35,8 @@ export class FieldBase extends ModelBase {
       let $args = obj.args;
 
       // wheather it is explicitly defined or has arguments
-      this.setMetadata('derived', obj.derived || (Array.isArray(obj.args) && obj.args.length > 0));
-      this.setMetadata('persistent', obj.persistent || !(obj.derived || (Array.isArray(obj.args) && obj.args.length > 0)));
+      this.setMetadata('storage.derived', obj.derived || (Array.isArray(obj.args) && obj.args.length > 0));
+      this.setMetadata('storage.persistent', obj.persistent || !(obj.derived || (Array.isArray(obj.args) && obj.args.length > 0)));
 
       result.entity = entity;
       result.entity_ = $entity;

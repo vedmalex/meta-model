@@ -2,6 +2,7 @@ import * as inflected from 'inflected';
 import { ModelPackage } from './modelpackage';
 import { ModelBaseStorage, ModelBaseInput } from './interfaces';
 import { Metadata } from './metadata';
+import fold from './../lib/json/fold';
 
 export class ModelBase extends Metadata {
   protected $obj: ModelBaseStorage;
@@ -9,7 +10,7 @@ export class ModelBase extends Metadata {
   constructor(obj: ModelBaseInput) {
     super(obj);
     if (obj) {
-      this.updateWith(obj);
+      this.updateWith(fold(obj) as ModelBaseInput);
     }
   }
 

@@ -6,6 +6,7 @@ import {
 } from './interfaces';
 import { Mutation } from './mutation';
 import deepMerge from '../lib/json/deepMerge';
+import fold from '../lib/json/fold';
 
 import * as fs from 'fs';
 
@@ -28,50 +29,51 @@ export class MetaModel extends ModelPackage {
     this.loadPackage(store);
   }
 
+  protected dedupeFields(src: FieldInput[]) {
+    return src.reduce((res, curr) => {
+      if (!res.hasOwnProperty(curr.name)) {
+        res[curr.name] = curr;
+      } else {
+        res[curr.name] = deepMerge(res[curr.name], curr);
+      }
+      return res;
+    }, {});
+  }
+
   protected applyEntityHook(entity: Entity, hook: EntityInput): Entity {
     let result = entity.toJSON();
     let metadata;
     if (hook.metadata) {
       metadata = deepMerge(result.metadata || {}, hook.metadata);
     }
-    let fields: FieldInput[];
+    let fields: {
+      [fName: string]: FieldInput;
+    };
     if (hook.fields) {
       if (Array.isArray(hook.fields)) {
-        fields = [
+        fields = this.dedupeFields([
           ...result.fields as FieldInput[],
           ...hook.fields as FieldInput[],
-        ];
+        ]);
       } else {
-        fields = result.fields;
-        let fDic = {};
+        fields = this.dedupeFields(result.fields);
         let fNames = Object.keys(hook.fields);
-        for (let i = 0, len = result.fields.length; i < len; i++) {
-          let f = result.fields[i] as FieldInput;
-          if (hook.fields.hasOwnProperty(f.name)) {
-            fDic[f.name] = i;
-          }
-        }
         for (let i = 0, len = fNames.length; i < len; i++) {
           let fName = fNames[i];
-          let index = fDic[fName];
-          if (index > -1) {
-            let f = result.fields[index];
-            f = deepMerge(f, hook.fields[fName]);
-            result.fields[index] = f;
+          if (fields.hasOwnProperty(fName)) {
+            fields[fName] = deepMerge(fields[fName], hook.fields[fName]);
           } else {
-            throw new Error(`undefined field ${fNames[i]} in hook`);
+            fields[fName] = hook.fields[fName];
           }
         }
       }
     }
 
-    result = {
+    return new Entity({
       ...result,
       fields,
       metadata,
-    };
-
-    return new Entity(result);
+    });
   }
 
   protected applyMutationHook(mutation: Mutation, hook: MutationInput): Mutation {
@@ -125,6 +127,9 @@ export class MetaModel extends ModelPackage {
               });
             } else {
               let e = this.entities.get(key);
+              if (!e) {
+                throw new Error(`Entity ${key} didn't exists anywhere`);
+              }
               let result = this.applyEntityHook(e, current);
               this.entities.set(result.name, result);
             }
@@ -154,7 +159,7 @@ export class MetaModel extends ModelPackage {
     }
   }
 
-  public loadPackage(store: MetaModelStore, hooks?: ModelHook[]) {
+  public loadPackage(store: MetaModelStore, hooks?: any[]) {
     this.reset();
 
     store.entities.forEach((ent) => {
@@ -167,7 +172,7 @@ export class MetaModel extends ModelPackage {
 
     this.ensureDefaultPackage();
 
-    this.applyHooks(hooks);
+    this.applyHooks(fold(hooks) as ModelHook[]);
 
     store.packages.forEach((pckg) => {
       let pack = new ModelPackage(pckg);
@@ -200,27 +205,6 @@ export class MetaModel extends ModelPackage {
     this.packages.clear();
     this.mutations.clear();
   }
-
-  // public createEntity(input: EntityInput): Entity {
-  //   let entity = new Entity(input);
-  //   if (this.entities.has(entity.name)) {
-  //     throw new Error(`Entity "${entity.name}" is already Exists`);
-  //   }
-  //   this.entities.set(entity.name, entity);
-  //   this.defaultPackage.addEntity(entity);
-  //   this.defaultPackage.ensureAll();
-  //   return entity;
-  // }
-
-  // public createMutation(input: MutationInput): Mutation {
-  //   let mutation = new Mutation(input);
-  //   if (this.mutations.has(mutation.name)) {
-  //     throw new Error(`Mutation "${mutation.name}" is already Exists`);
-  //   }
-  //   this.mutations.set(mutation.name, mutation);
-  //   this.defaultPackage.addMutation(mutation);
-  //   return mutation;
-  // }
 
   public createPackage(name: string): ModelPackage {
     if (this.packages.has(name)) {

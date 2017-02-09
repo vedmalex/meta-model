@@ -8,10 +8,10 @@ export interface FieldInput extends FieldBaseInput {
   indexed?: boolean | string | string[];
   required?: boolean;
   arguments?: [FieldArgs];
-  relation?: ({ hasMany: string, }
-    | { hasOne: string, }
-    | { belongsTo: string, }
-    | { belongsToMany: string, using: string, }) & {
+  relation?: ({ hasMany: string }
+    | { hasOne: string }
+    | { belongsTo: string }
+    | { belongsToMany: string, using: string }) & {
     entity: string;
     field: string;
   };
@@ -19,15 +19,9 @@ export interface FieldInput extends FieldBaseInput {
 
 export interface FieldStorage extends FieldBaseStorage {
   type: string;
-  identity: boolean | string | string[];
-  indexed: boolean | string | string[];
-  required: boolean;
   arguments?: [FieldArgs];
   type_: string;
   idKey: EntityReference;
-  identity_: boolean | string | string[];
-  indexed_: boolean | string | string[];
-  required_: boolean;
   relation: RelationBase;
 }
 
@@ -168,6 +162,17 @@ export interface RelationBaseInput {
   name?: string;
   entity: string;
   field: string;
+  fields?: RelationFields[];
+  opposite?: string;
+}
+
+export interface RelationBaseJSON {
+  /**
+   * нужно в случае когда мы будем показывать атрибут связи, и ассоциацию отедельно???
+   * больше не зачем
+   */
+  metadata?: { [key: string]: any };
+  name?: string;
   fields?: RelationFields[];
   opposite?: string;
 }

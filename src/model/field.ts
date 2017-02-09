@@ -32,21 +32,22 @@ export class Field extends FieldBase {
   }
 
   get identity(): boolean | string | string[] {
-    return this.$obj.identity;
+    return this.getMetadata('storage.identity');
   }
 
   // this is to make sure that if we internally set
   public makeIdentity() {
     this.$obj.idKey = new EntityReference(this.$obj.entity, this.$obj.name);
-    this.$obj.indexed = this.$obj.identity = this.$obj.identity_ = true;
+    this.setMetadata('storage.identity');
+    this.setMetadata('storage.indexed');
   }
 
   get required(): boolean {
-    return this.$obj.required || this.$obj.required_;
+    return this.getMetadata('storage.required');
   }
 
   get indexed(): boolean | string | string[] {
-    return this.$obj.indexed || this.$obj.indexed_;
+    return this.getMetadata('storage.indexed');
   }
 
   get idKey(): EntityReference {
@@ -86,34 +87,22 @@ export class Field extends FieldBase {
       let $type = obj.type;
       let type = $type || 'String';
 
-      let $identity = obj.identity && (!obj.derived || obj.persistent);
-      let identity = $identity || false;
+      this.setMetadata('storage.identity', obj.identity);
 
-      let $required = obj.required && (!obj.derived || obj.persistent);
-      let required = $required || false;
+      this.setMetadata('storage.required', obj.required || obj.identity);
 
-      let $indexed = obj.indexed && (!obj.derived || obj.persistent);
-      let indexed = $indexed || identity;
+      this.setMetadata('storage.indexed', obj.indexed || obj.identity);
 
       result.type_ = $type;
       result.type = type;
 
-      result.identity_ = $identity;
-      result.identity = identity;
-
-      result.indexed_ = $indexed;
-      result.indexed = indexed;
-
-      if (result.identity) {
+      if (obj.identity) {
         // это то как выглядит ключ для внешних ссылок
         result.idKey = new EntityReference(result.entity, result.name);
       }
 
-      result.required_ = $required;
-      result.required = $identity || required;
-
       // identity can't have relation definition
-      if (obj.relation && !$identity) {
+      if (obj.relation && !obj.identity) {
         let $relation = obj.relation;
         let relation: RelationBase;
 
@@ -154,14 +143,11 @@ export class Field extends FieldBase {
           {
             entity: props.entity,
             type: props.type || props.type_,
-            identity: props.identity || props.identity_,
-            required: props.required || props.required_,
-            indexed: props.indexed || props.indexed_,
             idKey: props.idKey ? props.idKey.toString() : undefined,
             relation: props.relation ? props.relation.toObject() : undefined,
-          }
-        )
-      )
+          },
+        ),
+      ),
     );
   }
 
@@ -176,13 +162,10 @@ export class Field extends FieldBase {
           res,
           {
             type: props.type_,
-            identity: props.identity_,
-            required: props.required_,
-            indexed: props.indexed_,
             relation: props.relation ? props.relation.toJSON() : undefined,
-          }
-        )
-      )
+          },
+        ),
+      ),
     );
   }
 }

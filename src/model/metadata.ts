@@ -36,13 +36,15 @@ export class Metadata {
       }
     }
   }
-    public toObject(): { [key: string]: any } {
+  public toObject(): { [key: string]: any } {
     return {
       metadata: this.metadata,
     };
   }
 
   public toJSON(): { [key: string]: any } {
-    return this.toObject();
+    return {
+      metadata: this.metadata,
+    };
   }
 }
