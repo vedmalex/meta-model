@@ -14,10 +14,10 @@ export class Metadata {
       return this.metadata;
     } else {
       let result = get(this.metadata, key);
-      if (!result && def) {
+      if (result === undefined && def !== undefined) {
         this.setMetadata(key, def);
       }
-      return result || def;
+      return result !== undefined ? result : def;
     }
   }
 
