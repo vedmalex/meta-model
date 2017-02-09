@@ -112,6 +112,7 @@ export class MetaModel extends ModelPackage {
       hooks = [hooks];
     }
     if (hooks) {
+      hooks = hooks.filter(f => f);
       hooks.forEach(hook => {
         if (hook.entities) {
           let keys = Object.keys(hook.entities);

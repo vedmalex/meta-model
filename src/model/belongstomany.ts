@@ -111,7 +111,7 @@ export class BelongsToMany extends RelationBase {
             type: refe.fields.get(this.ref.field).type,
             indexed: true,
           },
-          ...this.fields,
+          ...(this.fields || []),
           ...update.fields as FieldInput[],
         ].reduce((hash, curr) => {
           if (hash.has(curr.name)) {
