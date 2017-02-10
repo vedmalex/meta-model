@@ -54,7 +54,7 @@ export class BelongsToMany extends RelationBase {
             type: refe.fields.get(this.ref.field).type,
             indexed: true,
           },
-          ...this.fields,
+          ...(this.fields || []),
           ].reduce((hash, curr) => {
             if (hash.has(curr.name)) {
               curr = Object.assign({}, hash.get(curr.name), curr);
