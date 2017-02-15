@@ -60,10 +60,18 @@ export class MetaModel extends ModelPackage {
         let fNames = Object.keys(hook.fields);
         for (let i = 0, len = fNames.length; i < len; i++) {
           let fName = fNames[i];
-          if (fields.hasOwnProperty(fName)) {
-            fields[fName] = deepMerge(fields[fName], hook.fields[fName]);
+
+          if (fName === '*') {
+            debugger;
+            result.fields.forEach(f => {
+              fields[f.name] = deepMerge(f, hook.fields[fName]);
+            });
           } else {
-            fields[fName] = hook.fields[fName];
+            if (fields.hasOwnProperty(fName)) {
+              fields[fName] = deepMerge(fields[fName], hook.fields[fName]);
+            } else {
+              fields[fName] = hook.fields[fName];
+            }
           }
         }
       }
