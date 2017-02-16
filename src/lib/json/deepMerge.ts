@@ -15,8 +15,9 @@ export default function deepMerge(...args: Object[]) {
             let key = keys[j];
             if (current.hasOwnProperty(key)) {
               let cv = get(current, key);
-              if (result.hasOwnProperty(key) && typeof cv === 'object' && cv !== null) {
-                set(result, key, deepMerge(get(result, key), cv));
+              let rv = get(result, key);
+              if (result.hasOwnProperty(key) && (typeof rv === 'object' && rv !== null)) {
+                set(result, key, deepMerge(rv, cv));
               } else {
                 set(result, key, cv);
               }
