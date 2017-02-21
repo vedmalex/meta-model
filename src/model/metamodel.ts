@@ -3,6 +3,7 @@ import { ModelPackage } from './modelpackage';
 import {
   MetaModelStore, EntityInput,
   MutationInput, FieldInput, ModelHook,
+  ModelPackageStore,
 } from './interfaces';
 import { Mutation } from './mutation';
 import deepMerge from '../lib/json/deepMerge';
@@ -18,8 +19,8 @@ export class MetaModel extends ModelPackage {
   public store: string = 'default.json';
   public defaultPackage: ModelPackage;
 
-  constructor() {
-    super('default');
+  constructor(name: string = 'default') {
+    super(name);
     this.ensureDefaultPackage();
   }
 
@@ -62,7 +63,6 @@ export class MetaModel extends ModelPackage {
           let fName = fNames[i];
 
           if (fName === '*') {
-            debugger;
             result.fields.forEach(f => {
               fields[f.name] = deepMerge(f, hook.fields[fName]);
             });
@@ -168,6 +168,23 @@ export class MetaModel extends ModelPackage {
     }
   }
 
+  public addPackage(pckg: ModelPackageStore) {
+    let pack = new ModelPackage(pckg);
+    pack.connect(this);
+    this.packages.set(pckg.name, pack);
+    pckg.entities.forEach(e => {
+      if (this.entities.has(e)) {
+        pack.addEntity(this.entities.get(e));
+      }
+    });
+    pckg.mutations.forEach(m => {
+      if (this.mutations.has(m)) {
+        pack.addMutation(this.mutations.get(m));
+      }
+    });
+    pack.ensureAll();
+  }
+
   public loadPackage(store: MetaModelStore, hooks?: any[]) {
     this.reset();
 
@@ -183,22 +200,7 @@ export class MetaModel extends ModelPackage {
 
     this.applyHooks(fold(hooks) as ModelHook[]);
 
-    store.packages.forEach((pckg) => {
-      let pack = new ModelPackage(pckg);
-      pack.connect(this);
-      this.packages.set(pckg.name, pack);
-      pckg.entities.forEach(e => {
-        if (this.entities.has(e)) {
-          pack.addEntity(this.entities.get(e));
-        }
-      });
-      pckg.mutations.forEach(m => {
-        if (this.mutations.has(m)) {
-          pack.addMutation(this.mutations.get(m));
-        }
-      });
-      pack.ensureAll();
-    });
+    store.packages.forEach(this.addPackage);
   }
 
   public saveModel(fileName: string = this.store) {
@@ -216,7 +218,7 @@ export class MetaModel extends ModelPackage {
   }
 
   public createPackage(name: string): ModelPackage {
-    if (this.packages.has(name)) {
+    if (this.packages.has(name)){
       throw new Error(`Package "${name}" already exists`);
     }
     let pack = new ModelPackage(name);
@@ -243,11 +245,11 @@ export class MetaModel extends ModelPackage {
   }
 
   private ensureDefaultPackage() {
-    if (!this.packages.has('default')) {
+    if (!this.packages.has(this.name)) {
       this.defaultPackage = this;
       this.connect(this);
       this.ensureAll();
-      this.packages.set('default', this);
+      this.packages.set(this.name, this);
     }
   }
 }
