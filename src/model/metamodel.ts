@@ -218,7 +218,7 @@ export class MetaModel extends ModelPackage {
   }
 
   public createPackage(name: string): ModelPackage {
-    if (this.packages.has(name)){
+    if (this.packages.has(name)) {
       throw new Error(`Package "${name}" already exists`);
     }
     let pack = new ModelPackage(name);
