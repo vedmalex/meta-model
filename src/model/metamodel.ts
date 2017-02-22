@@ -11,6 +11,39 @@ import fold from '../lib/json/fold';
 
 import * as fs from 'fs';
 
+function getFilter(inp: string): { filter: (f) => boolean, fields: string[] } {
+  let result = {
+    filter: f => f.name === inp,
+    fields: [inp],
+  };
+  if (inp === '*') {
+    result.filter = () => true;
+  }
+  if (inp.startsWith('^[')) {
+    let notFields = inp.slice(2, inp.length - 1)
+      .split(',')
+      .map(f => f.trim())
+      .reduce((res, cur) => {
+        res[cur] = 1;
+        return res;
+      }, {});
+    result.filter = f => !notFields[f.name];
+    result.fields = [];
+  }
+  if (inp.startsWith('[')) {
+    let onlyFields = inp.slice(1, inp.length - 1)
+      .split(',')
+      .map(f => f.trim())
+      .reduce((res, cur) => {
+        res[cur] = 1;
+        return res;
+      }, {});
+    result.filter = f => !!onlyFields[f.name];
+    result.fields = Object.keys(onlyFields);
+  }
+  return result;
+}
+
 /**
  * Represents meta-model store
  */
@@ -61,17 +94,17 @@ export class MetaModel extends ModelPackage {
         let fNames = Object.keys(hook.fields);
         for (let i = 0, len = fNames.length; i < len; i++) {
           let fName = fNames[i];
-
-          if (fName === '*') {
-            result.fields.forEach(f => {
+          let prepare = getFilter(fName);
+          let list = result.fields.filter(prepare.filter);
+          if (list.length > 0) {
+            list.forEach(f => {
               fields[f.name] = deepMerge(f, hook.fields[fName]);
             });
           } else {
-            if (fields.hasOwnProperty(fName)) {
-              fields[fName] = deepMerge(fields[fName], hook.fields[fName]);
-            } else {
-              fields[fName] = hook.fields[fName];
-            }
+            // create specific items
+            prepare.fields.forEach(f => {
+              fields[f] = hook.fields[fName];
+            });
           }
         }
       }
@@ -129,18 +162,15 @@ export class MetaModel extends ModelPackage {
             let current = hook.entities[key];
             current.fields = current.fields ? current.fields : [];
             current.metadata = current.metadata ? current.metadata : {};
-            if (key === '*') {
-              Array.from(this.entities.values()).forEach(e => {
+            let prepare = getFilter(key);
+            let list = Array.from(this.entities.values()).filter(prepare.filter);
+            if (list.length > 0) {
+              list.forEach(e => {
                 let result = this.applyEntityHook(e, current);
                 this.entities.set(result.name, result);
               });
-            } else {
-              let e = this.entities.get(key);
-              if (!e) {
-                throw new Error(`Entity ${key} didn't exists anywhere`);
-              }
-              let result = this.applyEntityHook(e, current);
-              this.entities.set(result.name, result);
+            } else if (prepare.fields.length > 0) {
+              throw new Error(`Entit${prepare.fields.length === 1 ? 'y' : 'ies'} ${prepare.fields} not found`);
             }
           }
         }
@@ -152,15 +182,16 @@ export class MetaModel extends ModelPackage {
             current.args = current.args ? current.args : [];
             current.payload = current.payload ? current.payload : [];
             current.metadata = current.metadata ? current.metadata : {};
-            if (key === '*') {
-              Array.from(this.mutations.values()).forEach(e => {
+
+            let prepare = getFilter(key);
+            let list = Array.from(this.mutations.values()).filter(prepare.filter);
+            if (list.length > 0) {
+              list.forEach(e => {
                 let result = this.applyMutationHook(e, current);
                 this.mutations.set(result.name, result);
               });
-            } else {
-              let e = this.mutations.get(key);
-              let result = this.applyMutationHook(e, current);
-              this.mutations.set(result.name, result);
+            } else if (prepare.fields.length > 0) {
+              throw new Error(`Mutation${prepare.fields.length > 1 ? 's' : ''} ${prepare.fields} not found`);
             }
           }
         }
