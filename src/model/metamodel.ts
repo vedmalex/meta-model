@@ -153,6 +153,7 @@ export class MetaModel extends ModelPackage {
       hooks = [hooks];
     }
     if (hooks) {
+      debugger;
       hooks = hooks.filter(f => f);
       hooks.forEach(hook => {
         if (hook.entities) {
@@ -231,7 +232,7 @@ export class MetaModel extends ModelPackage {
 
     this.applyHooks(fold(hooks) as ModelHook[]);
 
-    store.packages.forEach(this.addPackage);
+    store.packages.forEach(this.addPackage.bind(this));
   }
 
   public saveModel(fileName: string = this.store) {

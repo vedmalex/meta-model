@@ -38,8 +38,9 @@ export class Field extends FieldBase {
   // this is to make sure that if we internally set
   public makeIdentity() {
     this.$obj.idKey = new EntityReference(this.$obj.entity, this.$obj.name);
-    this.setMetadata('storage.identity');
-    this.setMetadata('storage.indexed');
+    this.setMetadata('storage.identity', true);
+    this.setMetadata('storage.indexed', true);
+    this.setMetadata('storage.required', true);
   }
 
   get required(): boolean {

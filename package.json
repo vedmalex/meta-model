@@ -1,6 +1,6 @@
 {
   "name": "meta-model-dsl",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "description": "",
   "main": "dist/model/index.js",
   "typescript": {
@@ -17,12 +17,14 @@
     "@types/camelcase": "0.0.30",
     "@types/decamelize": "0.0.30",
     "@types/inflected": "^1.1.29",
-    "@types/node": "^6.0.45",
-    "tslint": "^3.15.1"
+    "@types/node": "^7.0.5",
+    "tslint": "^4.4.2",
+    "typescript": "^2.2.1"
   },
   "dependencies": {
-    "camelcase": "^3.0.0",
+    "camelcase": "^4.0.0",
     "decamelize": "^1.2.0",
+    "global": "^4.3.1",
     "inflected": "^1.1.7"
   }
 }

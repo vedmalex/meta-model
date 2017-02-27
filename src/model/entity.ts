@@ -8,7 +8,7 @@ import { DEFAULT_ID_FIELD } from './definitions';
 import { ModelPackage } from './modelpackage';
 import { EntityStorage, EntityInput, FieldInput, EntityJSON } from './interfaces';
 import * as inflected from 'inflected';
-import  deepMerge  from './../lib/json/deepMerge';
+import deepMerge from './../lib/json/deepMerge';
 
 /**
  * 1. тип объекта который входит на updateWith
@@ -326,7 +326,7 @@ export class Entity extends ModelBase {
 
       result.name = (result.name.slice(0, 1)).toUpperCase() + result.name.slice(1);
 
-      const fields = new Map();
+      const fields = new Map<string, Field>();
       const relations = new Set();
       const identity = new Set();
       const required = new Set();
@@ -376,24 +376,25 @@ export class Entity extends ModelBase {
         }
       }
 
-      if (identity.size === 0 || !(fields.has('_id') || fields.has('id'))) {
-        let f;
-        if (fields.has('id')) {
-          f = fields.get('id');
-        } else if (!f && fields.has('_id')) {
-          f = fields.get('_id');
-        } else {
-          f = new Field(Object.assign({}, DEFAULT_ID_FIELD, { entity: result.name }));
-          fields.set(f.name, f);
-        }
-
-        if (f) {
-          f.makeIdentity();
-          indexed.add(f.name);
-          identity.add(f.name);
-          required.add(f.name);
-        }
+      // if (identity.size === 0) {
+      // ensure Id property
+      let f;
+      if (fields.has('id')) {
+        f = fields.get('id');
+      } else if (!f && fields.has('_id')) {
+        f = fields.get('_id');
+      } else {
+        f = new Field(Object.assign({}, DEFAULT_ID_FIELD, { entity: result.name }));
+        fields.set(f.name, f);
       }
+
+      if (f) {
+        f.makeIdentity();
+        indexed.add(f.name);
+        identity.add(f.name);
+        required.add(f.name);
+      }
+      // }
 
       result.relations = relations;
       result.identity = identity;

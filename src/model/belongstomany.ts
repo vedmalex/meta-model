@@ -44,7 +44,6 @@ export class BelongsToMany extends RelationBase {
           .filter(r => r instanceof BelongsToMany)[0] as BelongsToMany;
 
         if (relsCandidate) {
-
           let fieldsMap = [{
             name: this.using.field,
             type: owner.fields.get(relsCandidate.ref.field).type,
@@ -148,6 +147,9 @@ export class BelongsToMany extends RelationBase {
       let using;
       if ($using) {
         using = new EntityReference($using);
+        if (!using.$obj.field) {
+          using.$obj.field = using.$obj._field = decapitalize(obj.entity);
+        }
       } else {
         // this single end association to other
         // this.$obj.verb = 'HasMany';
